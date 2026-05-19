@@ -2278,6 +2278,7 @@ function getData(){
     title:document.getElementById('meta-title').value,
     date:document.getElementById('meta-date').value,
     memo:document.getElementById('memo').value,
+    zoom:WW,
     rowHeight:ROW_H,
     barPad:BAR_PAD,
     legendItems,milestones,rows,pointers,periodBlocks
@@ -2287,6 +2288,11 @@ function setData(d){
   if(d.title)document.getElementById('meta-title').value=d.title;
   if(d.date)document.getElementById('meta-date').value=d.date;
   if(d.memo)document.getElementById('memo').value=d.memo;
+  if(d.zoom){
+    WW=d.zoom;
+    const sl=document.getElementById('zoom');
+    if(sl){sl.value=WW;document.getElementById('zoom-lbl').textContent=WW+'px';}
+  }
   if(d.rowHeight){
     ROW_H=d.rowHeight;
     const sl=document.getElementById('row-height');
@@ -2584,22 +2590,30 @@ function savePeriodBlocks(){
 // ═══════════════════════════════════════════
 function openSummaryPanel(){
   const today=new Date();
-  const todayW=Math.round((today-ORIGIN)/(7*86400000));
+  today.setHours(0,0,0,0); // 오늘 자정 기준
   let html2='<div style="font-size:13px;font-weight:600;margin-bottom:10px">📊 일정 요약</div>';
 
-  // 마일스톤 D-day
+  // 마일스톤 D-day — 일(day) 단위로 계산
   html2+='<div style="font-size:11px;font-weight:500;color:var(--tx2);margin-bottom:6px;border-bottom:0.5px solid var(--bd);padding-bottom:4px">마일스톤 D-day</div>';
   milestones.forEach(ms=>{
-    const mw=msWeek(ms);
-    const diff=mw-todayW;
-    const label=diff===0?'오늘':diff>0?`D-${diff}`:`D+${Math.abs(diff)}`;
-    const color=diff<0?'#E85D5D':diff===0?'#F5A623':'#5B8DEF';
-    html2+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:12px">
+    const msDate=new Date(ms.date+'T00:00:00');
+    msDate.setHours(0,0,0,0);
+    const diffMs=msDate-today;
+    const diffDays=Math.round(diffMs/86400000); // 밀리초 → 일
+    let label;
+    if(diffDays===0) label='오늘';
+    else if(diffDays>0) label='D-'+diffDays;
+    else label='D+'+Math.abs(diffDays);
+    const color=diffDays<0?'#E85D5D':diffDays===0?'#F5A623':'#5B8DEF';
+    html2+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:12px;border-bottom:0.5px solid var(--bd)">
       <span style="display:flex;align-items:center;gap:6px">
         <span style="width:8px;height:8px;border-radius:50%;background:${ms.color||'#DD2222'};flex-shrink:0;display:inline-block"></span>
         ${ms.name}
       </span>
-      <span style="font-weight:600;color:${color}">${label} (${ms.date})</span>
+      <span style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">
+        <span style="font-weight:700;font-size:13px;color:${color}">${label}</span>
+        <span style="font-size:10px;color:var(--tx3)">${ms.date}</span>
+      </span>
     </div>`;
   });
 
@@ -2610,6 +2624,7 @@ function openSummaryPanel(){
     const allE=allGs.map((g,i)=>allS[i]+g.phases.reduce((s,p)=>s+p.dur,0));
     const minW2=Math.min(...allS),maxW2=Math.max(...allE);
     const totalWks=maxW2-minW2;
+    const todayW=Math.round((today-ORIGIN)/(7*86400000));
     html2+=`<div style="font-size:11px;font-weight:500;color:var(--tx2);margin:10px 0 6px;border-bottom:0.5px solid var(--bd);padding-bottom:4px">전체 일정</div>`;
     html2+=`<div style="font-size:12px;padding:3px 0">총 기간: <b>${totalWks}주</b> (약 ${Math.round(totalWks/4)}개월)</div>`;
     html2+=`<div style="font-size:12px;padding:3px 0">시작: ${wlabel(minW2)}</div>`;
@@ -2618,9 +2633,13 @@ function openSummaryPanel(){
     // 진행률 (오늘 기준)
     if(todayW>=minW2&&todayW<=maxW2){
       const pct=Math.round((todayW-minW2)/(maxW2-minW2)*100);
-      html2+=`<div style="font-size:12px;padding:3px 0">진행률: <b>${pct}%</b></div>`;
-      html2+=`<div style="height:6px;background:var(--bg2);border-radius:3px;margin-top:4px;overflow:hidden">
-        <div style="height:100%;width:${pct}%;background:#5B8DEF;border-radius:3px;transition:width .3s"></div></div>`;
+      html2+=`<div style="font-size:12px;padding:3px 0;margin-top:4px">진행률: <b>${pct}%</b></div>`;
+      html2+=`<div style="height:8px;background:var(--bg2);border-radius:4px;margin-top:4px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:#5B8DEF;border-radius:4px;transition:width .3s"></div></div>`;
+    } else if(todayW<minW2){
+      html2+=`<div style="font-size:11px;color:var(--tx3);margin-top:4px">아직 시작 전입니다</div>`;
+    } else {
+      html2+=`<div style="font-size:11px;color:#52B96A;margin-top:4px">✅ 완료된 일정입니다</div>`;
     }
   }
   document.getElementById('summary-content').innerHTML=html2;
