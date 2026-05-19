@@ -1,0 +1,2661 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>인허가 일정표</title>
+<style>
+:root{
+  --bg:#fff;--bg2:#f6f6f4;--bg3:#eeeeec;
+  --bd:rgba(0,0,0,0.09);--bd2:rgba(0,0,0,0.17);
+  --tx:#1a1a1a;--tx2:#666;--tx3:#aaa;
+  --acc:#3478f6;--acc-bg:#eaf2ff;--acc-tx:#1450c8;
+  --dan:#d93025;--dan-bg:#fdecea;--dan-tx:#b71c1c;
+  --rad:8px;--rad-lg:12px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;
+  --bd:rgba(255,255,255,0.08);--bd2:rgba(255,255,255,0.15);
+  --tx:#f0f0f0;--tx2:#aaa;--tx3:#666;
+  --acc:#5b9cf6;--acc-bg:#1a2a4a;--acc-tx:#90b8f8;
+  --dan:#f05050;--dan-bg:#3a1a1a;--dan-tx:#f08080;
+}}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,'Malgun Gothic','맑은 고딕',sans-serif;font-size:13px;color:var(--tx);background:var(--bg2)}
+#app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+#header{background:var(--bg);border-bottom:0.5px solid var(--bd);padding:9px 14px;flex-shrink:0}
+#hdr-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+#hdr-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#main{flex:1;overflow:auto;padding:9px 14px}
+#footer{background:var(--bg);border-top:0.5px solid var(--bd);padding:7px 14px;flex-shrink:0}
+#memo-wrap label{font-size:11px;color:var(--tx2);display:block;margin-bottom:3px}
+textarea#memo{width:100%;font-size:11px;font-family:inherit;padding:5px 8px;border-radius:var(--rad);border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx);resize:vertical;min-height:38px;max-height:80px}
+button{font-family:inherit;font-size:12px;padding:4px 10px;border-radius:var(--rad);border:0.5px solid var(--bd2);background:transparent;color:var(--tx2);cursor:pointer;transition:background .12s;white-space:nowrap}
+button:hover{background:var(--bg2)}
+button.pri{background:var(--acc-bg);color:var(--acc-tx);border-color:transparent}
+button.ms-btn{border-color:#cc3333;color:#cc3333}
+button.ms-btn:hover{background:#fff0f0}
+button.danger{color:var(--dan-tx);border-color:transparent}
+button.danger:hover{background:var(--dan-bg)}
+button.pdf-btn{background:var(--dan-bg);color:var(--dan-tx);border-color:transparent}
+input[type=date],input[type=text],input[type=number],select{font-family:inherit;font-size:12px;padding:3px 7px;border-radius:var(--rad);border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx);outline:none}
+input[type=range]{width:68px;accent-color:var(--acc)}
+.vsep{width:0.5px;height:18px;background:var(--bd2);flex-shrink:0}
+#legend-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}
+.leg{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--tx2)}
+.ld{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.ld-line{width:2px;height:12px;flex-shrink:0}
+.leg-edit-btn{font-size:10px;padding:2px 7px;border-radius:10px;color:var(--tx3)}
+#hint{font-size:11px;color:var(--tx3);margin-bottom:5px;line-height:1.6}
+#gantt-wrap{overflow:auto;border-radius:var(--rad);background:var(--bg)}
+#gc{display:block}
+#tooltip{position:fixed;background:var(--bg);border:0.5px solid var(--bd2);border-radius:var(--rad);padding:6px 10px;font-size:11px;line-height:1.6;pointer-events:none;z-index:9999;display:none;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.12)}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.42);z-index:1000;align-items:flex-start;justify-content:center;padding-top:32px;overflow-y:auto}
+.modal-bg.open{display:flex}
+.modal{background:var(--bg);border:0.5px solid var(--bd2);border-radius:var(--rad-lg);padding:16px;width:580px;max-width:96vw;max-height:88vh;overflow-y:auto;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
+.modal h3{font-size:14px;font-weight:600;margin-bottom:11px}
+.mrow{display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-wrap:wrap}
+.mrow>label{font-size:11px;color:var(--tx2);min-width:88px;flex-shrink:0}
+.mrow input[type=number]{width:56px}
+.mrow input[type=text]{flex:1;min-width:150px}
+.mrow select{min-width:155px}
+.mhint{font-size:11px;color:var(--tx3)}
+.sec{font-size:11px;font-weight:500;color:var(--tx2);margin:10px 0 5px;padding-bottom:3px;border-bottom:0.5px solid var(--bd)}
+.mbtn-row{display:flex;gap:5px;margin-top:10px}
+.ptbl{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:5px}
+.ptbl th{text-align:left;padding:3px 4px;background:var(--bg2);color:var(--tx2);font-weight:400;border-bottom:0.5px solid var(--bd)}
+.ptbl td{padding:2px 3px;border-bottom:0.5px solid var(--bd);vertical-align:middle}
+.ptbl td input{width:100%}
+.ptbl td input[type=number]{width:50px}
+.ptbl td select{width:100%}
+.ph-btns{display:flex;gap:2px}
+.ph-btns button{font-size:10px;padding:1px 4px;border:0.5px solid var(--bd2);border-radius:3px}
+.ms-list,.leg-list{border:0.5px solid var(--bd);border-radius:var(--rad);overflow:hidden;margin-bottom:8px}
+.ms-row,.leg-row{display:flex;align-items:center;gap:6px;padding:5px 8px;border-bottom:0.5px solid var(--bd);background:var(--bg)}
+.ms-row:last-child,.leg-row:last-child{border-bottom:none}
+.ms-row input[type=color],.leg-row input[type=color]{width:28px;height:22px;padding:1px;border-radius:3px;cursor:pointer;border:0.5px solid var(--bd2)}
+.ms-row input[type=text],.leg-row input[type=text]{flex:1;min-width:90px}
+.ms-row input[type=date]{width:134px}
+.ms-empty{padding:10px;text-align:center;color:var(--tx3);font-size:11px}
+.emph-opt{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.emph-chip{font-size:11px;padding:3px 9px;border-radius:20px;border:0.5px solid var(--bd2);cursor:pointer;color:var(--tx2);transition:all .12s}
+.emph-chip.on{border-color:#FF8C00;color:#b85c00;background:rgba(255,140,0,0.12);font-weight:600}
+
+/* ── 모바일 공통 ── */
+@media(max-width:600px){
+  #hdr-top{gap:5px}
+  button{font-size:13px;padding:7px 12px;min-height:40px}
+  .vsep{height:24px}
+  input[type=range]{width:56px}
+  #hdr-meta{gap:6px}
+  #hdr-meta input[type=text]{max-width:200px}
+  #hdr-meta input[type=date]{width:120px}
+  #hint{font-size:10px}
+  /* 모달 풀스크린 */
+  .modal-bg{padding-top:0;align-items:flex-end}
+  .modal{
+    width:100%;max-width:100%;
+    border-radius:var(--rad-lg) var(--rad-lg) 0 0;
+    max-height:90vh;
+    padding:16px 14px 24px;
+  }
+  /* 단계 테이블 모바일 */
+  .ptbl th:nth-child(5),.ptbl td:nth-child(5){display:none} /* 패턴 컬럼 숨김 */
+  .mrow>label{min-width:72px;font-size:12px}
+  .mrow input[type=text]{min-width:120px}
+  .mrow select{min-width:130px}
+  /* 메모 숨김 (공간 절약) */
+  #footer{display:none}
+  /* 간트 전체 영역 */
+  #main{padding:6px 8px}
+  #legend-bar{gap:6px}
+}
+/* 터치 디바이스 - 버튼 활성 피드백 */
+@media(hover:none){
+  button:active{opacity:0.7;transform:scale(0.97)}
+  .emph-chip:active{opacity:0.7}
+}
+/* 캔버스 터치 스크롤 허용 (드래그 중에만 막음) */
+#gantt-wrap{-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="header">
+  <div id="hdr-top">
+    <button id="btn-undo" onclick="doUndo()" title="실행 취소 (Ctrl+Z)" style="font-size:13px;padding:4px 8px" disabled>↩</button>
+    <button id="btn-redo" onclick="doRedo()" title="다시 실행 (Ctrl+Y)" style="font-size:13px;padding:4px 8px" disabled>↪</button>
+    <div class="vsep"></div>
+    <button class="pri" onclick="openAddGroup()">＋ 항목</button>
+    <button onclick="openAddSep()">— 구분선</button>
+    <button class="ms-btn" onclick="openMsModal()">🚩 마일스톤</button>
+    <button onclick="openAddPointer()">▲ 포인터</button>
+    <button onclick="openLegModal()">🎨 범례 편집</button>
+    <div class="vsep"></div>
+    <label style="font-size:11px;color:var(--tx2)">줌</label>
+    <input type="range" id="zoom" min="6" max="44" value="15" step="1">
+    <span id="zoom-lbl" style="font-size:11px;color:var(--tx2);min-width:24px">15px</span>
+    <div class="vsep"></div>
+    <label style="font-size:11px;color:var(--tx2)">행 높이</label>
+    <input type="range" id="row-height" min="20" max="72" value="32" step="2">
+    <span id="rh-lbl" style="font-size:11px;color:var(--tx2);min-width:24px">32px</span>
+    <div class="vsep"></div>
+    <label style="font-size:11px;color:var(--tx2)">바 여백</label>
+    <input type="range" id="bar-pad" min="2" max="14" value="5" step="1">
+    <span id="bp-lbl" style="font-size:11px;color:var(--tx2);min-width:24px">5px</span>
+    <div class="vsep"></div>
+    <button onclick="doExport()">💾 JSON</button>
+    <button onclick="doImport()">📂 불러오기</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImport(event)">
+    <button onclick="resetToDefault()" style="font-size:11px;padding:4px 8px;color:var(--tx3)">↺ 초기화</button>
+    <div class="vsep"></div>
+    <button onclick="openPeriodModal()" title="명절·공백 기간 표시">📅 기간 블록</button>
+    <button onclick="openSummaryPanel()" title="일정 요약 및 D-day">📊 요약</button>
+    <div class="vsep"></div>
+    <button onclick="previewPDF()" style="border-color:#CC3333;color:#CC3333">🔍 미리보기</button>
+    <button class="pdf-btn" onclick="exportPDF()">📄 PDF (A3)</button>
+  </div>
+  <div id="hdr-meta">
+    <label style="font-size:11px;color:var(--tx2)">제목</label>
+    <input type="text" id="meta-title" value="마포구 성산동 165-72번지 일대 가로주택정비사업" style="flex:1;min-width:220px;max-width:480px">
+    <label style="font-size:11px;color:var(--tx2)">작성일</label>
+    <input type="date" id="meta-date" style="width:136px">
+    <span id="autosave-badge" style="font-size:10px;color:var(--tx3);white-space:nowrap;transition:color .3s"></span>
+  </div>
+</div>
+
+<div id="main">
+  <div id="legend-bar"></div>
+  <div id="hint">✥ 드래그: 이동 &nbsp;|&nbsp; ↔ 바 끝 드래그: 기간 조정 &nbsp;|&nbsp; 더블클릭: 편집 &nbsp;|&nbsp; Ctrl+Z: 실행취소 &nbsp;|&nbsp; 변경사항 자동저장</div>
+  <div id="gantt-wrap"><canvas id="gc"></canvas></div>
+</div>
+
+<div id="footer">
+  <div id="memo-wrap">
+    <label>📝 메모</label>
+    <textarea id="memo">※ 위 일정은 인허가 과정 및 조합의 일정에 따라 변경될 수 있습니다.</textarea>
+  </div>
+</div>
+</div>
+
+<div id="tooltip"></div>
+
+<!-- 기간 블록 모달 -->
+<div class="modal-bg" id="period-modal-bg" onclick="if(event.target===this)document.getElementById('period-modal-bg').classList.remove('open')">
+<div class="modal" style="width:540px">
+  <h3>📅 기간 블록 (명절·공백 기간)</h3>
+  <p style="font-size:11px;color:var(--tx2);margin-bottom:9px">간트 차트에 색상 배경으로 표시할 기간을 추가합니다.</p>
+  <div id="period-list"></div>
+  <button onclick="addPeriodBlock()" style="margin-bottom:8px;font-size:11px">＋ 기간 추가</button>
+  <div style="display:flex;gap:6px;margin-top:8px">
+    <button class="pri" onclick="savePeriodBlocks()">저장</button>
+    <button onclick="document.getElementById('period-modal-bg').classList.remove('open')">닫기</button>
+  </div>
+</div>
+</div>
+
+<!-- 일정 요약 모달 -->
+<div class="modal-bg" id="summary-modal-bg" onclick="if(event.target===this)document.getElementById('summary-modal-bg').classList.remove('open')">
+<div class="modal" style="width:400px">
+  <div id="summary-content"></div>
+  <button onclick="document.getElementById('summary-modal-bg').classList.remove('open')" style="margin-top:12px">닫기</button>
+</div>
+</div>
+
+<!-- 마일스톤 모달 -->
+<div class="modal-bg" id="ms-modal-bg" onclick="if(event.target===this)closeMsModal()">
+<div class="modal">
+  <h3>🚩 마일스톤 관리</h3>
+  <p style="font-size:11px;color:var(--tx2);margin-bottom:9px">세로 기준선 — 드래그로 이동 가능, 더블클릭으로 편집</p>
+  <div class="ms-list" id="ms-list"></div>
+  <button onclick="addMs()" style="margin-bottom:7px">＋ 추가</button>
+  <div class="mbtn-row"><button class="pri" onclick="saveMilestones()">저장</button><button onclick="closeMsModal()">닫기</button></div>
+</div>
+</div>
+
+<!-- 포인터 모달 -->
+<div class="modal-bg" id="ptr-modal-bg" onclick="if(event.target===this)closePtrModal()">
+<div class="modal" style="width:440px">
+  <h3 id="ptr-modal-title">▲ 포인터 추가</h3>
+  <div class="mrow"><label>레이블</label><input type="text" id="ptr-label" placeholder="예: 공람" style="flex:1"></div>
+  <div class="mrow">
+    <label>날짜</label>
+    <input type="date" id="ptr-date" value="2025-01-06">
+    <span class="mhint">← 날짜를 선택하면 자동으로 주차로 변환됩니다</span>
+  </div>
+  <div class="mrow">
+    <label>연결 항목</label>
+    <select id="ptr-gid" style="min-width:160px"><option value="">없음 (전체 행)</option></select>
+  </div>
+  <div class="mrow">
+    <label>위치</label>
+    <select id="ptr-pos">
+      <option value="above">바 위 (▼ 모양)</option>
+      <option value="below">바 아래 (▲ 모양)</option>
+    </select>
+  </div>
+  <div class="mrow">
+    <label>색상</label>
+    <input type="color" id="ptr-color" value="#DD4444" style="width:36px;height:26px;border-radius:4px;cursor:pointer;border:0.5px solid var(--bd2)">
+  </div>
+  <div class="mbtn-row">
+    <button class="pri" onclick="savePtrModal()">저장</button>
+    <button onclick="closePtrModal()">취소</button>
+    <button class="danger" id="ptr-del-btn" onclick="deletePtrModal()" style="display:none">삭제</button>
+  </div>
+</div>
+</div>
+
+<!-- 범례 편집 모달 -->
+<div class="modal-bg" id="leg-modal-bg" onclick="if(event.target===this)closeLegModal()">
+<div class="modal">
+  <h3>🎨 범례 편집</h3>
+  <p style="font-size:11px;color:var(--tx2);margin-bottom:9px">색상과 이름을 자유롭게 지정합니다.</p>
+  <div class="leg-list" id="leg-list"></div>
+  <button onclick="addLegItem()" style="margin-bottom:7px">＋ 항목 추가</button>
+  <div class="mbtn-row"><button class="pri" onclick="saveLegend()">저장</button><button onclick="closeLegModal()">닫기</button></div>
+</div>
+</div>
+
+<!-- 항목/구분선/마일스톤 편집 모달 -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+<div class="modal">
+  <h3 id="modal-title">편집</h3>
+
+  <!-- 구분선 섹션 -->
+  <div id="sep-section" style="display:none">
+    <div class="mrow"><label>레이블</label><input type="text" id="sep-label" placeholder="예: ─── 인허가 심의 ───" style="flex:1"></div>
+    <div class="mrow"><label>선 색상</label><input type="color" id="sep-color" value="#aaaaaa" style="width:36px;height:26px;border-radius:4px;cursor:pointer;border:0.5px solid var(--bd2)"></div>
+    <div class="mbtn-row"><button class="pri" onclick="saveSep()">저장</button><button onclick="closeModal()">취소</button><button class="danger" id="sep-del-btn" onclick="deleteSep()" style="display:none">삭제</button></div>
+  </div>
+
+  <!-- 마일스톤 단일편집 섹션 -->
+  <div id="ms-edit-section" style="display:none">
+    <div class="mrow"><label>이름</label><input type="text" id="mse-name" style="flex:1"></div>
+    <div class="mrow"><label>날짜</label><input type="date" id="mse-date"></div>
+    <div class="mrow"><label>색상</label><input type="color" id="mse-color" style="width:36px;height:26px;border-radius:4px;cursor:pointer;border:0.5px solid var(--bd2)"></div>
+    <div class="mbtn-row"><button class="pri" onclick="saveMsEdit()">저장</button><button onclick="closeModal()">취소</button><button class="danger" onclick="deleteMsEdit()">삭제</button></div>
+  </div>
+
+  <!-- 항목 섹션 -->
+  <div id="group-section" style="display:none">
+    <div class="mrow"><label>항목명</label><input type="text" id="m-name"></div>
+
+    <!-- 강조 스타일 + 색상 -->
+    <div class="mrow">
+      <label>강조 스타일</label>
+      <div class="emph-opt" id="emph-opts">
+        <span class="emph-chip on" data-v="none" onclick="setEmph('none')">없음</span>
+        <span class="emph-chip" data-v="outline" onclick="setEmph('outline')">테두리</span>
+        <span class="emph-chip" data-v="fill" onclick="setEmph('fill')">배경</span>
+        <span class="emph-chip" data-v="both" onclick="setEmph('both')">테두리+배경</span>
+        <span style="font-size:11px;color:var(--tx2);margin-left:4px">색상</span>
+        <input type="color" id="emph-color" value="#FF8C00" style="width:28px;height:22px;padding:1px;border-radius:3px;cursor:pointer;border:0.5px solid var(--bd2)" title="강조 색상 지정">
+      </div>
+    </div>
+
+    <div class="sec">시작 위치</div>
+    <div class="mrow">
+      <label>시작 기준</label>
+      <select id="m-anchor" onchange="updateAUI()">
+        <option value="free">절대 위치 (주차 직접 지정)</option>
+        <option value="recv_end">마일스톤 N주 전에 종료</option>
+        <option value="dep_end">선행항목 종료 후 N주 뒤 시작</option>
+      </select>
+    </div>
+    <div class="mrow" id="m-ms-row" style="display:none"><label>기준 마일스톤</label><select id="m-ms-ref"></select></div>
+    <div class="mrow" id="m-dep-row" style="display:none"><label>선행항목</label><select id="m-dep"></select></div>
+    <div class="mrow" id="m-offset-row" style="display:none">
+      <label id="m-offset-lbl">오프셋(주)</label>
+      <input type="number" id="m-offset" value="0">
+      <span id="m-offset-hint" class="mhint"></span>
+    </div>
+    <div class="mrow" id="m-abs-row">
+      <label>시작 날짜</label>
+      <input type="date" id="m-abs-date" value="2025-01-06">
+      <span class="mhint">← 날짜를 선택하면 자동으로 주차로 변환됩니다</span>
+    </div>
+    <div class="sec">단계 — 왼쪽부터 한 행에 순서대로 이어 붙여집니다</div>
+    <table class="ptbl">
+      <thead><tr>
+        <th style="width:20px">#</th>
+        <th>단계명</th>
+        <th style="width:50px">기간(주)</th>
+        <th style="width:64px">바 색상</th>
+        <th style="width:56px">글자색</th>
+        <th style="width:68px">패턴</th>
+        <th style="width:90px">마일스톤 연동</th>
+        <th style="width:50px">오프셋</th>
+        <th style="width:54px"></th>
+      </tr></thead>
+      <tbody id="ptbody"></tbody>
+    </table>
+    <div style="font-size:10px;color:var(--tx3);margin-bottom:3px">마일스톤 연동: 해당 단계의 시작점을 마일스톤 기준으로 고정. 마일스톤 이동 시 단계도 자동 이동.</div>
+    <button onclick="addPhase()" style="font-size:11px;margin-bottom:3px">＋ 단계 추가</button>
+    <div class="mbtn-row">
+      <button class="pri" onclick="saveGroup()">저장</button>
+      <button onclick="closeModal()">취소</button>
+      <button id="dup-btn" onclick="duplicateGroup(editId);closeModal()" style="display:none">복제</button>
+      <button class="danger" id="del-btn" onclick="deleteGroup()">삭제</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// 데이터
+// ═══════════════════════════════════════════
+const PC={
+  red:   {bar:'#E85D5D',text:'#7A1010'},
+  blue:  {bar:'#5B8DEF',text:'#0C3A80'},
+  green: {bar:'#52B96A',text:'#1A5C2A'},
+  orange:{bar:'#F5A623',text:'#5C3200'},
+  purple:{bar:'#9B59B6',text:'#2E0B4F'},
+  yellow:{bar:'#D4A800',text:'#3D2800'},
+  teal:  {bar:'#17A9A0',text:'#0A4D4A'},
+  pink:  {bar:'#E06FA0',text:'#7A1040'},
+  gray:  {bar:'#8E8E93',text:'#3A3A3C'},
+};
+const CNAMES={red:'빨강',blue:'파랑',green:'초록',orange:'주황',purple:'보라',yellow:'노랑',teal:'청록',pink:'핑크',gray:'회색'};
+// 패턴 종류
+const PATTERNS={
+  solid:'단색',
+  vline:'세로줄',
+  hline:'가로줄',
+  diag:'사선(↗)',
+  diagR:'사선(↘)',
+  cross:'격자',
+  dots:'점선',
+};
+// offscreen 패턴 캔버스 생성
+// 패턴 캐시 (생성 비용 절감 + Safari 반복 오류 방지)
+var _patCache={};
+function makePattern(tc2,barColor,patternKey,scale){
+  scale=scale||1;
+  if(!patternKey||patternKey==='solid')return barColor;
+  var cacheKey=barColor+'_'+patternKey+'_'+Math.round(scale);
+  if(_patCache[cacheKey])return _patCache[cacheKey];
+  try{
+    var s=Math.max(4,Math.round(6*scale));
+    var pc=document.createElement('canvas');
+    pc.width=s;pc.height=s;
+    var px=pc.getContext('2d');
+    if(!px)return barColor; // getContext 실패 방어
+    px.fillStyle=barColor;px.fillRect(0,0,s,s);
+    var light='rgba(255,255,255,0.42)';
+    px.strokeStyle=light;px.lineWidth=Math.max(1,scale*0.8);
+    if(patternKey==='vline'){
+      px.beginPath();px.moveTo(s/2,0);px.lineTo(s/2,s);px.stroke();
+    }else if(patternKey==='hline'){
+      px.beginPath();px.moveTo(0,s/2);px.lineTo(s,s/2);px.stroke();
+    }else if(patternKey==='diag'){
+      px.beginPath();px.moveTo(0,s);px.lineTo(s,0);px.stroke();
+      px.beginPath();px.moveTo(-s/2,s/2);px.lineTo(s/2,-s/2);px.stroke();
+      px.beginPath();px.moveTo(s/2,s*1.5);px.lineTo(s*1.5,s/2);px.stroke();
+    }else if(patternKey==='diagR'){
+      px.beginPath();px.moveTo(0,0);px.lineTo(s,s);px.stroke();
+      px.beginPath();px.moveTo(-s/2,s/2);px.lineTo(s/2,s*1.5);px.stroke();
+      px.beginPath();px.moveTo(s/2,-s/2);px.lineTo(s*1.5,s/2);px.stroke();
+    }else if(patternKey==='cross'){
+      px.beginPath();px.moveTo(s/2,0);px.lineTo(s/2,s);px.stroke();
+      px.beginPath();px.moveTo(0,s/2);px.lineTo(s,s/2);px.stroke();
+    }else if(patternKey==='dots'){
+      px.fillStyle=light;
+      px.beginPath();px.arc(s/2,s/2,Math.max(1,s*0.18),0,Math.PI*2);px.fill();
+    }
+    var pat=tc2.createPattern(pc,'repeat');
+    if(pat){_patCache[cacheKey]=pat;return pat;}
+    return barColor;
+  }catch(err){
+    return barColor; // 패턴 생성 실패 시 단색으로 fallback
+  }
+}
+
+// ── 기본 데이터 (JSON 내장) ──────────────────────────────────
+const _DEFAULT_DATA = {
+  "title": "마포구 성산동 165-72번지 일대 가로주택정비사업",
+  "date": "2026-05-15",
+  "memo": "※ 위 일정은 인허가 과정 및 조합의 일정에 따라 변경될 수 있습니다.",
+  "legendItems": [
+    {
+      "color": "#E85D5D",
+      "name": "접수"
+    },
+    {
+      "color": "#5B8DEF",
+      "name": "검토/협의"
+    },
+    {
+      "color": "#52B96A",
+      "name": "완료"
+    },
+    {
+      "color": "#F5A623",
+      "name": "인허가"
+    },
+    {
+      "color": "#9B59B6",
+      "name": "도시"
+    },
+    {
+      "color": "#D4A800",
+      "name": "조합"
+    }
+  ],
+  "milestones": [
+    {
+      "id": "ms1",
+      "name": "사업시행인가 접수",
+      "date": "2026-06-21",
+      "color": "#DD2222"
+    },
+    {
+      "id": "ms2",
+      "name": "사업시행인가 완료",
+      "date": "2026-12-20",
+      "color": "#CC6600"
+    },
+    {
+      "id": "ms3",
+      "name": "착공",
+      "date": "2027-03-21",
+      "color": "#226622"
+    },
+    {
+      "id": "ms1778803114126",
+      "name": "통합심의 완료",
+      "date": "2025-08-03",
+      "color": "#f61313"
+    }
+  ],
+  "rows": [
+    {
+      "type": "group",
+      "id": "g1",
+      "name": "관리계획",
+      "anchor": "free",
+      "offset": 0,
+      "dep": "",
+      "msref": "ms1",
+      "abs": 0,
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "phases": [
+        {
+          "name": "초기계획 작성",
+          "dur": 8,
+          "color": "purple"
+        },
+        {
+          "name": "관계기관 협의",
+          "dur": 6,
+          "color": "purple",
+          "pattern": "solid"
+        },
+        {
+          "name": "사업시행인가 준비",
+          "dur": 50,
+          "color": "purple",
+          "pattern": "vline"
+        },
+        {
+          "name": "사업성보정계수 적용",
+          "dur": 4,
+          "color": "purple"
+        },
+        {
+          "name": "관리계획변경 심의",
+          "dur": 4,
+          "color": "purple"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "id": "g2",
+      "name": "교통영향평가",
+      "anchor": "free",
+      "offset": 0,
+      "dep": "",
+      "msref": "ms1",
+      "abs": 0,
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "phases": [
+        {
+          "name": "기초조사·도서작성",
+          "dur": 4,
+          "color": "red"
+        },
+        {
+          "name": "심의기관 검토",
+          "dur": 8,
+          "color": "blue"
+        },
+        {
+          "name": "의견반영 보완",
+          "dur": 2,
+          "color": "green"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "id": "g3",
+      "name": "교육환경영향평가",
+      "anchor": "free",
+      "offset": 62,
+      "dep": "",
+      "msref": "ms1",
+      "abs": 0,
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "phases": [
+        {
+          "name": "도서작성",
+          "dur": 4,
+          "color": "red"
+        },
+        {
+          "name": "검토·협의",
+          "dur": 8,
+          "color": "blue"
+        },
+        {
+          "name": "의견반영",
+          "dur": 2,
+          "color": "green"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "id": "g4",
+      "name": "통합심의",
+      "anchor": "free",
+      "offset": 53,
+      "dep": "",
+      "msref": "ms1",
+      "abs": 12,
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "phases": [
+        {
+          "name": "심의신청·자료제출",
+          "dur": 5,
+          "color": "red"
+        },
+        {
+          "name": "심의위원회 검토",
+          "dur": 13,
+          "color": "blue"
+        }
+      ]
+    },
+    {
+      "type": "sep",
+      "id": "s2",
+      "label": "",
+      "color": "#557799"
+    },
+    {
+      "type": "group",
+      "id": "g5",
+      "name": "대우건설(시공사)",
+      "anchor": "free",
+      "offset": 0,
+      "dep": "",
+      "msref": "ms1",
+      "abs": 0,
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "phases": [
+        {
+          "name": "세대확정·기본설계",
+          "dur": 4,
+          "color": "red"
+        },
+        {
+          "name": "설계변경 협의",
+          "dur": 72,
+          "color": "blue"
+        },
+        {
+          "name": "실시설계",
+          "dur": 26,
+          "color": "yellow"
+        },
+        {
+          "name": "착공서류 작성",
+          "dur": 13,
+          "color": "green"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "id": "g6",
+      "name": "지반조사",
+      "anchor": "free",
+      "offset": 0,
+      "dep": "",
+      "msref": "ms1",
+      "abs": 14,
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "phases": [
+        {
+          "name": "예비조사",
+          "dur": 4,
+          "color": "red"
+        },
+        {
+          "name": "본조사(시추·분석)",
+          "dur": 9,
+          "color": "blue"
+        },
+        {
+          "name": "보고서 작성",
+          "dur": 4,
+          "color": "green"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "id": "g7",
+      "name": "굴토심의",
+      "anchor": "free",
+      "offset": -17,
+      "dep": "",
+      "msref": "ms1",
+      "abs": 72,
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "phases": [
+        {
+          "name": "흙막이 도서 작성",
+          "dur": 4,
+          "color": "red"
+        },
+        {
+          "name": "지하안전영향평가 완료대기",
+          "dur": 22,
+          "color": "blue",
+          "pattern": "vline"
+        },
+        {
+          "name": "도서작성 및 협의기간",
+          "dur": 4,
+          "color": "blue"
+        },
+        {
+          "name": "사전검토 및 의견제출",
+          "dur": 6,
+          "color": "blue"
+        },
+        {
+          "name": "의견반영 및 조치계획서 제출",
+          "dur": 5,
+          "color": "green"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "id": "g8",
+      "name": "지하안전영향평가",
+      "anchor": "free",
+      "offset": -15,
+      "dep": "",
+      "msref": "ms1",
+      "abs": 72,
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "phases": [
+        {
+          "name": "보고서 작성",
+          "dur": 4,
+          "color": "red"
+        },
+        {
+          "name": "검토/보완/행정처리",
+          "dur": 22,
+          "color": "blue"
+        },
+        {
+          "name": "굴토심의 대기",
+          "dur": 8,
+          "color": "blue",
+          "pattern": "vline"
+        },
+        {
+          "name": "시공협의",
+          "dur": 8,
+          "color": "green"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "id": "g9",
+      "name": "풍동실험",
+      "anchor": "free",
+      "offset": -4,
+      "dep": "",
+      "msref": "ms1",
+      "abs": 69,
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "phases": [
+        {
+          "name": "일람도 형계획",
+          "dur": 4,
+          "color": "red"
+        },
+        {
+          "name": "풍동실험 실시",
+          "dur": 4,
+          "color": "blue"
+        },
+        {
+          "name": "풍압등록·보고서",
+          "dur": 4,
+          "color": "green"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "id": "g10",
+      "name": "구조심의",
+      "anchor": "free",
+      "offset": 0,
+      "dep": "g9",
+      "msref": "ms1",
+      "abs": 69,
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "phases": [
+        {
+          "name": "데이터 작성",
+          "dur": 4,
+          "color": "red"
+        },
+        {
+          "name": "풍동실험 대기",
+          "dur": 8,
+          "color": "blue"
+        },
+        {
+          "name": "풍동실험 반영",
+          "dur": 4,
+          "color": "red"
+        },
+        {
+          "name": "성능설계",
+          "dur": 13,
+          "color": "blue"
+        },
+        {
+          "name": "도서작성",
+          "dur": 4,
+          "color": "yellow"
+        },
+        {
+          "name": "구조심의 및 보완",
+          "dur": 8,
+          "color": "green"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "id": "g11",
+      "name": "소규모 재해안전",
+      "anchor": "free",
+      "offset": -2,
+      "dep": "",
+      "msref": "ms1",
+      "abs": 72,
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "phases": [
+        {
+          "name": "재해영향평가",
+          "dur": 4,
+          "color": "red"
+        },
+        {
+          "name": "협의 및 보완",
+          "dur": 4,
+          "color": "green"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "id": "g12",
+      "name": "친환경(녹색건축)",
+      "anchor": "free",
+      "offset": -20,
+      "dep": "",
+      "msref": "ms1",
+      "abs": 72,
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "phases": [
+        {
+          "name": "도서작성",
+          "dur": 4,
+          "color": "red"
+        },
+        {
+          "name": "협의공문수신",
+          "dur": 4,
+          "color": "blue"
+        },
+        {
+          "name": "기관협의",
+          "dur": 6,
+          "color": "blue"
+        },
+        {
+          "name": "보완",
+          "dur": 15,
+          "color": "yellow",
+          "pattern": "vline"
+        },
+        {
+          "name": "도서작성 및 협의/결로방지 성능평가",
+          "dur": 6,
+          "color": "blue"
+        },
+        {
+          "name": "기관협의",
+          "dur": 4,
+          "color": "purple"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "id": "g13",
+      "name": "해체심의",
+      "anchor": "free",
+      "offset": -40,
+      "dep": "",
+      "msref": "ms1",
+      "abs": 94,
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "phases": [
+        {
+          "name": "해체심의",
+          "dur": 16,
+          "color": "blue"
+        }
+      ]
+    },
+    {
+      "type": "sep",
+      "id": "s3",
+      "label": "",
+      "color": "#774422"
+    },
+    {
+      "type": "group",
+      "id": "g14",
+      "name": "사업시행계획인가",
+      "anchor": "free",
+      "offset": 0,
+      "dep": "",
+      "msref": "ms1",
+      "abs": 0,
+      "emph": "both",
+      "emphColor": "#ff8c00",
+      "phases": [
+        {
+          "name": "조치계획반영 및 시공사, 조합협의",
+          "dur": 29,
+          "color": "orange"
+        },
+        {
+          "name": "사업시행인가 도서 작성",
+          "dur": 39,
+          "color": "orange",
+          "pattern": "vline"
+        },
+        {
+          "name": "사전협의/보완",
+          "dur": 8,
+          "color": "orange"
+        },
+        {
+          "name": "유관부서/보완",
+          "dur": 26,
+          "color": "orange"
+        },
+        {
+          "name": "착공도서 작성",
+          "dur": 13,
+          "color": "orange",
+          "pattern": "vline"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "id": "g15",
+      "name": "성산동 조합",
+      "anchor": "free",
+      "offset": 0,
+      "dep": "",
+      "msref": "ms1",
+      "abs": 0,
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "phases": [
+        {
+          "name": "종전종후 자산평가",
+          "dur": 8,
+          "color": "yellow"
+        },
+        {
+          "name": "추정분담금 산정",
+          "dur": 8,
+          "color": "yellow"
+        },
+        {
+          "name": "조합원 분양",
+          "dur": 8,
+          "color": "yellow"
+        },
+        {
+          "name": "관리처분계획인가",
+          "dur": 78,
+          "color": "yellow"
+        },
+        {
+          "name": "이주 / 철거",
+          "dur": 13,
+          "color": "yellow"
+        }
+      ]
+    }
+  ],
+  "pointers": [
+    {
+      "id": "pt1778802840397",
+      "label": "사업시행인가 접수",
+      "absWeek": 76,
+      "gid": "g14",
+      "pos": "above",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778803036532",
+      "label": "사업시행인가 완료",
+      "absWeek": 102,
+      "gid": "g14",
+      "pos": "above",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778803608377",
+      "label": "공람",
+      "absWeek": 72,
+      "gid": "g15",
+      "pos": "above",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778803643181",
+      "label": "총회",
+      "absWeek": 74,
+      "gid": "g15",
+      "pos": "above",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778803827675",
+      "label": "25.07.30 수정가결",
+      "absWeek": 30,
+      "gid": "g4",
+      "pos": "above",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778804223293",
+      "label": "지하안전영향평가 완료",
+      "absWeek": 98,
+      "gid": "g8",
+      "pos": "above",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778804421154",
+      "label": "도서제출",
+      "absWeek": 102,
+      "gid": "g7",
+      "pos": "below",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778804488579",
+      "label": "위원 도서배포",
+      "absWeek": 110,
+      "gid": "g7",
+      "pos": "above",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778804649660",
+      "label": "굴토심의",
+      "absWeek": 108,
+      "gid": "g7",
+      "pos": "below",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778804681920",
+      "label": "굴토심의 완료",
+      "absWeek": 113,
+      "gid": "g7",
+      "pos": "below",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778804883743",
+      "label": "풍동실험 완료",
+      "absWeek": 81,
+      "gid": "g9",
+      "pos": "above",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778804921707",
+      "label": "구조심의 접수",
+      "absWeek": 102,
+      "gid": "g10",
+      "pos": "above",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778804988525",
+      "label": "보고서 제출",
+      "absWeek": 76,
+      "gid": "g11",
+      "pos": "below",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778805012033",
+      "label": "완료",
+      "absWeek": 80,
+      "gid": "g11",
+      "pos": "below",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778805270427",
+      "label": "관리처분계획인가접수",
+      "absWeek": 76,
+      "gid": "g15",
+      "pos": "below",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778805312913",
+      "label": "착공",
+      "absWeek": 115,
+      "gid": "g5",
+      "pos": "above",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778805497369",
+      "label": "완료",
+      "absWeek": 110,
+      "gid": "g10",
+      "pos": "above",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1778805551535",
+      "label": "완료",
+      "absWeek": 114,
+      "gid": "g8",
+      "pos": "below",
+      "color": "#dd4444"
+    }
+  ]
+};
+
+let legendItems = _DEFAULT_DATA.legendItems;
+let milestones  = _DEFAULT_DATA.milestones;
+let rows        = JSON.parse(JSON.stringify(_DEFAULT_DATA.rows));
+let pointers    = _DEFAULT_DATA.pointers || [];
+
+// milestones: _DEFAULT_DATA에서 로드됨
+
+// rows: _DEFAULT_DATA에서 로드됨
+
+// pointers: _DEFAULT_DATA에서 로드됨
+
+// ═══════════════════════════════════════════
+// 유틸
+// ═══════════════════════════════════════════
+const ORIGIN=new Date('2025-01-06T00:00:00');
+const dw=d=>Math.round((d-ORIGIN)/(7*86400000));
+const wd=w=>{let d=new Date(ORIGIN);d.setDate(d.getDate()+w*7);return d};
+const fym=d=>d.getFullYear()+'년 '+(d.getMonth()+1)+'월';
+const wlabel=w=>{const d=wd(w);return d.getFullYear()+'년 '+(d.getMonth()+1)+'월 ~'+Math.ceil(d.getDate()/7)+'주'};
+let WW=15;
+const DPR=window.devicePixelRatio||1;
+
+function msWeek(ms){return dw(new Date(ms.date+'T00:00:00'))}
+function groupStart(g,depth=0){
+  if(depth>20)return 0;
+  if(g.anchor==='free')return g.abs;
+  const tot=g.phases.reduce((s,p)=>s+p.dur,0);
+  if(g.anchor==='recv_end'){const ms=milestones.find(m=>m.id===g.msref)||milestones[0];return ms?msWeek(ms)-tot-g.offset:0}
+  if(g.anchor==='dep_end'&&g.dep){const dep=rows.find(x=>x.id===g.dep&&x.type==='group');if(dep)return groupStart(dep,depth+1)+dep.phases.reduce((s,p)=>s+p.dur,0)+g.offset}
+  return g.abs;
+}
+function hexToRgba(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},${a})`}
+function lightenHex(hex,amount=0.85){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);const lr=Math.round(r+(255-r)*amount),lg=Math.round(g+(255-g)*amount),lb=Math.round(b+(255-b)*amount);return`rgb(${lr},${lg},${lb})`}
+
+// ═══════════════════════════════════════════
+// 범례
+// ═══════════════════════════════════════════
+function renderLegend(){
+  const el=document.getElementById('legend-bar');el.innerHTML='';
+  legendItems.forEach(li=>{
+    const d=document.createElement('div');d.className='leg';
+    d.innerHTML=`<div class="ld" style="background:${li.color}"></div><span>${li.name}</span>`;
+    el.appendChild(d);
+  });
+  const ms=document.createElement('div');ms.className='leg';
+  ms.innerHTML=`<div class="ld-line" style="background:#DD2222"></div><span>마일스톤</span>`;
+  el.appendChild(ms);
+  const btn=document.createElement('button');btn.className='leg-edit-btn';btn.textContent='편집';
+  btn.onclick=openLegModal;el.appendChild(btn);
+}
+
+// ═══════════════════════════════════════════
+// 팔레트
+// ═══════════════════════════════════════════
+function palette(forPrint=false){
+  const dk=!forPrint&&matchMedia('(prefers-color-scheme:dark)').matches;
+  return{
+    bg:      dk?'#1c1c1e':'#ffffff',
+    hdrYear: dk?'#202028':'#e6e8f0',  // 연도행
+    hdrMon:  dk?'#1e1e26':'#eff0f5',  // 월행
+    hdrWkA:  dk?'#1a1a22':'#f5f6fa',  // 주차 홀수
+    hdrWkB:  dk?'#18181f':'#ffffff',  // 주차 짝수
+    rowWkA:  dk?'rgba(255,255,255,0.012)':'rgba(0,0,0,0.012)', // 데이터행 홀수주
+    rowWkB:  dk?'rgba(0,0,0,0)':'rgba(0,0,0,0)',               // 데이터행 짝수주
+    bdYear:  dk?'rgba(255,255,255,0.28)':'rgba(0,0,0,0.28)',   // 연 경계선 (가장 굵고 진함)
+    bdMon:   dk?'rgba(255,255,255,0.14)':'rgba(0,0,0,0.14)',   // 월 경계선
+    bdWk:    dk?'rgba(255,255,255,0.05)':'rgba(0,0,0,0.05)',   // 주차 경계선 (가장 연함)
+    bdRow:   dk?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)',   // 행 구분선
+    txt:     dk?'#e8e8e8':'#1a1a1a',
+    sub:     dk?'#888':'#666',
+    rowAlt:  dk?'rgba(255,255,255,0.025)':'rgba(0,0,0,0.02)',
+    hover:   dk?'rgba(255,255,255,0.05)':'rgba(0,0,0,0.04)',
+  };
+}
+
+// ═══════════════════════════════════════════
+// Canvas 렌더
+// ═══════════════════════════════════════════
+const canvas=document.getElementById('gc');
+const ctx=canvas.getContext('2d');
+let _minW=0,_maxW=0,hitAreas=[],hoverGid=null;
+
+const LABEL_W=162,H_YEAR=18,H_MON=16,H_WK=14;
+const HDR_H=H_YEAR+H_MON+H_WK;
+let ROW_H=32; const SEP_H=18;
+let BAR_PAD=5; // 바 위아래 여백(px)
+
+function rrFill(c,x,y,w,h,r){
+  if(w<=0||h<=0)return;
+  r=Math.min(r,w/2,h/2);
+  c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.arcTo(x+w,y,x+w,y+r,r);
+  c.lineTo(x+w,y+h-r);c.arcTo(x+w,y+h,x+w-r,y+h,r);
+  c.lineTo(x+r,y+h);c.arcTo(x,y+h,x,y+h-r,r);
+  c.lineTo(x,y+r);c.arcTo(x,y,x+r,y,r);
+  c.closePath();c.fill();
+}
+
+// 행별 배지 X범위 추적용 (렌더 시작 시 초기화)
+let _rowBadgeSlots={}; // key=rowY, val=[[x1,x2,level],...]
+
+function _findBadgeLevel(rowY,bx,bw){
+  if(!_rowBadgeSlots[rowY])_rowBadgeSlots[rowY]=[];
+  const slots=_rowBadgeSlots[rowY];
+  // 겹치는 슬롯들의 최대 레벨 찾기
+  let maxLevel=0;
+  for(const [sx1,sx2,lv] of slots){
+    if(bx<sx2+2&&bx+bw>sx1-2) maxLevel=Math.max(maxLevel,lv+1);
+  }
+  slots.push([bx,bx+bw,maxLevel]);
+  return maxLevel;
+}
+
+// 행별 배지 슬롯 — 위(above)/아래(below) 방향 별도 관리
+function _findBadgeLevel(rowY,bx,bw,dir){
+  const key=rowY+'_'+dir;
+  if(!_rowBadgeSlots[key])_rowBadgeSlots[key]=[];
+  const slots=_rowBadgeSlots[key];
+  let maxLevel=0;
+  for(const [sx1,sx2,lv] of slots){
+    if(bx<sx2+2&&bx+bw>sx1-2) maxLevel=Math.max(maxLevel,lv+1);
+  }
+  slots.push([bx,bx+bw,maxLevel]);
+  return maxLevel;
+}
+
+function _drawBadge(tc,text,bx,badgeY,badgeW,badgeH,fontSize,midX,barY,level,dir){
+  // 연결선 (레벨 1 이상)
+  if(level>0){
+    tc.strokeStyle='rgba(200,200,200,0.35)';tc.lineWidth=0.8;tc.setLineDash([2,2]);
+    const lineFromY=dir==='above'?badgeY+badgeH:badgeY;
+    const lineToY=dir==='above'?barY:barY+_lastBarH;
+    tc.beginPath();tc.moveTo(bx+badgeW/2,lineFromY);tc.lineTo(midX,lineToY);tc.stroke();
+    tc.setLineDash([]);
+  }
+  tc.fillStyle='rgba(18,18,18,0.75)';
+  rrFill(tc,bx,badgeY,badgeW,badgeH,3);
+  tc.fillStyle='#ffffff';tc.font=`500 ${fontSize}px sans-serif`;
+  tc.textAlign='center';
+  tc.fillText(text,bx+badgeW/2,badgeY+badgeH-3);
+}
+
+let _lastBarH=20; // 마지막으로 그린 바 높이 (연결선용)
+
+// 텍스트가 바 안에 들어가는지 판단, 안 들어가면 위/아래 배지로 — 공간 자동 판단
+function drawPhaseLabel(tc,text,barX,barY,barW,barH,textColor,bgColor,rowY,logicW,visX,visW,rowBottom){
+  // visX/visW: 가시 영역, barX/barW: 실제 바, rowBottom: 이 행의 하단 Y
+  if(visW===undefined){visX=barX;visW=barW;}
+  _lastBarH=barH;
+  const fontSize=Math.max(8,Math.min(12,barH*0.52));
+  tc.font=`500 ${fontSize}px sans-serif`;
+  const tw=tc.measureText(text).width;
+  const pad=5;
+  const midX=barX+barW/2;
+  const visCenter=Math.max(visX+visW/2,Math.min(midX,visX+visW-pad));
+  const badgeW=tw+8;
+  const badgeH=fontSize+5;
+
+  if(tw+pad*2<=visW){
+    // ① 바 안에 들어감 — 가운데 정렬
+    tc.save();tc.beginPath();tc.rect(visX+1,barY,visW-2,barH);tc.clip();
+    tc.fillStyle=textColor;tc.textAlign='center';
+    tc.fillText(text,visCenter,barY+barH/2+fontSize*0.35);
+    tc.restore();
+    return;
+  }
+  if(visW<4) return;
+
+  // 배지 X 위치 계산 (공통)
+  let bx=midX-badgeW/2;
+  bx=Math.max(LABEL_W+2,bx);
+  bx=Math.min(bx,(logicW||9999)-badgeW-2);
+
+  // 위쪽 공간 계산: level 0 기준 badgeY
+  const spaceAbove=barY-HDR_H; // 헤더 아래 ~ 바 위
+  const needAbove=badgeH+4;    // 레벨 0 배지 하나 넣을 최소 공간
+
+  // 아래쪽 공간 계산
+  const barBottom=barY+barH;
+  const spaceBelow=(rowBottom||barBottom+20)-barBottom;
+  const needBelow=badgeH+4;
+
+  if(spaceAbove>=needAbove){
+    // ② 위에 공간 있음 — 위 배지
+    const level=_findBadgeLevel(rowY,bx,badgeW,'above');
+    const badgeY=barY-badgeH-2-level*(badgeH+2);
+    if(badgeY>HDR_H){
+      _drawBadge(tc,text,bx,badgeY,badgeW,badgeH,fontSize,midX,barY,level,'above');
+      return;
+    }
+  }
+
+  if(spaceBelow>=needBelow){
+    // ③ 위 공간 부족 → 아래 배지
+    const level=_findBadgeLevel(rowY,bx,badgeW,'below');
+    const badgeY=barBottom+2+level*(badgeH+2);
+    if(rowBottom===undefined||badgeY+badgeH<=rowBottom+2){
+      _drawBadge(tc,text,bx,badgeY,badgeW,badgeH,fontSize,midX,barBottom,level,'below');
+      return;
+    }
+  }
+
+  // ④ 위아래 모두 공간 없음 — 바 안에 축약
+  if(visW>=20){
+    let t=text;
+    tc.font=`500 ${Math.max(7,fontSize-1)}px sans-serif`;
+    while(tc.measureText(t+'…').width+pad*2>visW&&t.length>1)t=t.slice(0,-1);
+    tc.save();tc.beginPath();tc.rect(visX+1,barY,visW-2,barH);tc.clip();
+    tc.fillStyle=textColor;tc.textAlign='center';
+    tc.fillText(t.length<text.length?t+'…':t,visCenter,barY+barH/2+fontSize*0.35);
+    tc.restore();
+  }
+}
+
+function renderToCtx(tc,tcanvas,forPrint=false){
+  _rowBadgeSlots={}; // 행별 배지 슬롯 초기화
+  const co=palette(forPrint);
+  const gs=rows.filter(r=>r.type==='group');
+  const allS=gs.map(g=>groupStart(g));
+  const allE=gs.map((g,i)=>allS[i]+g.phases.reduce((s,p)=>s+p.dur,0));
+  const msCols=milestones.map(m=>msWeek(m));
+  const mW=Math.min(...allS,...msCols)-2;
+  const xW=Math.max(...allE,...msCols)+4;
+  if(!forPrint){_minW=mW;_maxW=xW}
+  const minW=forPrint?mW:_minW;
+  const maxW=forPrint?xW:_maxW;
+
+  const rowHeights=rows.map(r=>r.type==='sep'?SEP_H:ROW_H);
+  const totalRowH=rowHeights.reduce((a,b)=>a+b,0);
+  const logicW=LABEL_W+(maxW-minW)*WW;
+  const logicH=HDR_H+totalRowH+4;
+
+  let scale=DPR;
+  if(forPrint){
+    // A3 가로 @ 150dpi: 420mm×297mm → 2480×1754px
+    // 여백 제외 인쇄 가능 영역: 약 2300×1550px
+    const printW=2300, printH=1550;
+    const scaleW=printW/logicW;
+    const scaleH=printH/logicH;
+    scale=Math.min(scaleW,scaleH);
+    scale=Math.max(scale,2);   // 최소 2x (흐림 방지)
+    scale=Math.min(scale,5);   // 최대 5x (메모리 한계)
+    scale=Math.round(scale*10)/10; // 소수점 1자리로 정리
+  }
+
+  tcanvas.width=Math.round(logicW*scale);
+  tcanvas.height=Math.round(logicH*scale);
+  tcanvas.style.width=logicW+'px';
+  tcanvas.style.height=logicH+'px';
+  tc.setTransform(scale,0,0,scale,0,0);
+
+  const wx=w=>LABEL_W+(w-minW)*WW;
+  const yYear=0,yMon=H_YEAR,yWk=H_YEAR+H_MON;
+
+  // ── 배경 ──
+  tc.fillStyle=co.bg;tc.fillRect(0,0,logicW,logicH);
+
+  // ── 주차 배경 줄무늬 (전체 높이) ──
+  // 먼저 전체에 주차 배경 깔기
+  for(let w=minW;w<maxW;w++){
+    const isOdd=((w%2)+2)%2===0;
+    if(isOdd&&co.rowWkA!=='rgba(0,0,0,0)'){
+      tc.fillStyle=forPrint?'rgba(0,0,0,0.012)':co.rowWkA;
+      tc.fillRect(wx(w),0,WW,logicH);
+    }
+  }
+
+  // ── 연도 헤더 ──
+  const yrColors=forPrint?['#dde0ec','#e8ebf5']:
+    matchMedia('(prefers-color-scheme:dark)').matches?['#202028','#252530']:['#dde0ec','#e8ebf5'];
+  for(let yi=0;yi<5;yi++){
+    const yr=2025+yi;
+    const yrStart=yi*48;      // 4주×12월 = 48주/년
+    const yrEnd=(yi+1)*48;
+    const x1=Math.max(LABEL_W,wx(yrStart));
+    const x2=Math.min(logicW,wx(yrEnd));
+    if(x2>x1){
+      tc.fillStyle=yrColors[yi%2];tc.fillRect(x1,yYear,x2-x1,H_YEAR);
+      tc.fillStyle=forPrint?'#1a1a3a':co.txt;tc.font='600 11px sans-serif';tc.textAlign='center';
+      tc.fillText(yr+'년',x1+(x2-x1)/2,yYear+H_YEAR-4);
+    }
+  }
+
+  // ── 월/주차 헤더 — 각 월 정확히 4칸 고정 ──
+  // ORIGIN(2025-01-06)이 1월 1주 → minW 기준으로 연/월을 역산
+  const monColors=forPrint?['#eef0f8','#f5f6fb']:
+    matchMedia('(prefers-color-scheme:dark)').matches?['#1e1e26','#202028']:['#eef0f8','#f5f6fb'];
+  // minW에 해당하는 연/월 계산
+  {
+    // 전체 주차를 4주 단위 월 블록으로 처리
+    // 2025-01-06 = 주0, 4주마다 한 달
+    // 절대 월 인덱스: Math.floor(absWeek/4), 월 내 주: absWeek%4
+    const absMinW=minW; // 음수 가능
+    // 첫 월 블록의 시작 주 (4의 배수로 내림)
+    const firstMonStart=Math.floor(absMinW/4)*4;
+    let mi=0;
+    for(let monStart=firstMonStart; monStart<maxW+4; monStart+=4){
+      // 이 월 블록의 연/월 계산
+      const absMonIdx=Math.floor(monStart/4); // 0=2025년1월
+      const totalMonth=absMonIdx; // 0부터
+      const yr=2025+Math.floor(totalMonth/12);
+      const mo=((totalMonth%12)+12)%12; // 0~11
+      const ws2=monStart, we2=monStart+4;
+      const mx=wx(ws2), mw=4*WW;
+      // 월 배경
+      tc.fillStyle=monColors[mi%2];tc.fillRect(mx,yMon,mw,H_MON);
+      if(mw>12){
+        tc.fillStyle=forPrint?'#444':co.sub;tc.font='500 9px sans-serif';tc.textAlign='center';
+        tc.fillText((mo+1)+'월',mx+mw/2,yMon+H_MON-3);
+      }
+      // 주차 셀 1~4 고정
+      for(let wk=0;wk<4;wk++){
+        const w=ws2+wk;
+        const wx2=wx(w);
+        tc.fillStyle=wk%2===0?(forPrint?'#f2f3f9':co.hdrWkA):(forPrint?'#fafbff':co.hdrWkB);
+        tc.fillRect(wx2,yWk,WW,H_WK);
+        if(WW>=10){
+          tc.fillStyle=forPrint?'#777':co.sub;tc.font='7px sans-serif';tc.textAlign='center';
+          tc.fillText(wk+1,wx2+WW/2,yWk+H_WK-2);
+        }
+      }
+      mi++;
+    }
+  }
+
+  // ── 세로선 (위계: 연>월>주) — 중복 없이 한 번만 그림 ──
+  // 연도 경계: 각 연도 1월 1일에 해당하는 정확한 주 시작점
+  const yearBoundWeeks=new Set();
+  for(let yi=0;yi<5;yi++){
+    // 4주×12월=48주 단위로 연도 경계 계산 (ORIGIN=2025-01-06 기준)
+    yearBoundWeeks.add(yi*48);
+  }
+  // 월 경계: 각 월 1일에 해당하는 주 시작점 (연도 경계 제외)
+  const monBoundWeeks=new Set();
+  {
+    const firstMonStart=Math.floor(minW/4)*4;
+    for(let ms2=firstMonStart;ms2<=maxW+4;ms2+=4){
+      if(!yearBoundWeeks.has(ms2))monBoundWeeks.add(ms2);
+    }
+  }
+  for(let w=minW;w<=maxW;w++){
+    const x=wx(w);
+    const isYear=yearBoundWeeks.has(w);
+    const isMon=monBoundWeeks.has(w);
+    if(isYear){
+      tc.strokeStyle=forPrint?'rgba(0,0,0,0.45)':co.bdYear;
+      tc.lineWidth=forPrint?2:1.5;
+      tc.beginPath();tc.moveTo(x,0);tc.lineTo(x,logicH);tc.stroke();
+    } else if(isMon){
+      tc.strokeStyle=forPrint?'rgba(0,0,0,0.18)':co.bdMon;
+      tc.lineWidth=forPrint?0.8:0.6;
+      tc.beginPath();tc.moveTo(x,yMon);tc.lineTo(x,logicH);tc.stroke();
+    } else {
+      tc.strokeStyle=forPrint?'rgba(0,0,0,0.07)':co.bdWk;
+      tc.lineWidth=forPrint?0.4:0.3;
+      tc.beginPath();tc.moveTo(x,yWk);tc.lineTo(x,logicH);tc.stroke();
+    }
+  }
+
+  // ── 라벨 고정 열 ──
+  tc.fillStyle=forPrint?'#dde0ec':co.hdrYear;tc.fillRect(0,yYear,LABEL_W,H_YEAR);
+  tc.fillStyle=forPrint?'#eef0f8':co.hdrMon;tc.fillRect(0,yMon,LABEL_W,H_MON);
+  tc.fillStyle=forPrint?'#f2f3f9':co.hdrWkA;tc.fillRect(0,yWk,LABEL_W,H_WK);
+  tc.strokeStyle=forPrint?'rgba(0,0,0,0.25)':co.bdMon;tc.lineWidth=1;
+  tc.beginPath();tc.moveTo(0,HDR_H);tc.lineTo(logicW,HDR_H);tc.stroke();
+  tc.fillStyle=forPrint?'#1a1a3a':co.txt;tc.font='600 11px sans-serif';tc.textAlign='left';
+  tc.fillText('항목',10,yYear+H_YEAR-4);
+
+  if(!forPrint)hitAreas=[];
+
+  // ── 행 렌더링 ──
+  let gi=0;
+  let yCur=HDR_H;
+  rows.forEach((row,ri)=>{
+    const rh=rowHeights[ri];
+    if(row.type==='sep'){
+      // 구분선
+      tc.fillStyle=forPrint?'rgba(0,0,0,0.03)':co.bg;tc.fillRect(0,yCur,logicW,rh);
+      const lineY=yCur+rh/2;
+      const sc=row.color||'#aaa';
+      // 배경 배지
+      tc.fillStyle=forPrint?'rgba(0,0,0,0.04)':'rgba(128,128,128,0.07)';
+      tc.fillRect(0,yCur,logicW,rh);
+      tc.strokeStyle=sc;tc.lineWidth=forPrint?0.8:0.6;tc.setLineDash([5,4]);
+      tc.beginPath();tc.moveTo(LABEL_W+2,lineY);tc.lineTo(logicW-2,lineY);tc.stroke();
+      tc.setLineDash([]);
+      if(row.label){
+        tc.font='600 10px sans-serif';
+        const tw=tc.measureText(row.label).width+12;
+        tc.fillStyle=forPrint?'#f8f8f8':'rgba(248,248,248,0.95)';
+        rrFill(tc,LABEL_W+10,yCur+(rh-15)/2,tw,15,3);
+        tc.fillStyle=sc;tc.textAlign='left';
+        tc.fillText(row.label,LABEL_W+16,yCur+rh/2+3.5);
+      }
+      // 라벨열도
+      tc.fillStyle=sc;tc.font='600 10px sans-serif';tc.textAlign='left';
+      tc.fillText(row.label||'',6,yCur+rh/2+3.5);
+      if(!forPrint)hitAreas.push({type:'sep',id:row.id,x1:0,x2:logicW,y1:yCur,y2:yCur+rh});
+    } else {
+      const g=row;
+      const gs2=allS[gi];
+      const isHov=!forPrint&&hoverGid===g.id;
+      const emph=g.emph||'none';
+      const ec=g.emphColor||'#FF8C00';
+      const hasFill=emph==='fill'||emph==='both';
+      const hasOut=emph==='outline'||emph==='both';
+
+      // 행 배경
+      if(hasFill){
+        tc.fillStyle=forPrint?lightenHex(ec,0.88):hexToRgba(ec,0.08);
+        tc.fillRect(0,yCur,logicW,rh);
+      } else if(gi%2===1||isHov){
+        tc.fillStyle=isHov?co.hover:co.rowAlt;tc.fillRect(0,yCur,logicW,rh);
+      }
+
+      // 강조 테두리
+      if(hasOut){
+        tc.strokeStyle=ec;tc.lineWidth=1.5;
+        tc.strokeRect(0.75,yCur+0.75,logicW-1.5,rh-1.5);
+      }
+
+      tc.strokeStyle=co.bdRow;tc.lineWidth=0.5;
+      tc.beginPath();tc.moveTo(0,yCur+rh);tc.lineTo(logicW,yCur+rh);tc.stroke();
+
+      // 라벨
+      tc.fillStyle=forPrint?'#fff':co.bg;tc.fillRect(0,yCur,LABEL_W,rh);
+      if(hasFill){tc.fillStyle=forPrint?lightenHex(ec,0.88):hexToRgba(ec,0.08);tc.fillRect(0,yCur,LABEL_W,rh)}
+      const lblFont=(hasOut||hasFill)?'600 11px sans-serif':'11px sans-serif';
+      tc.font=lblFont;
+      let lbl=g.name;
+      while(tc.measureText(lbl).width>LABEL_W-18&&lbl.length>2)lbl=lbl.slice(0,-1);
+      if(lbl!==g.name)lbl+='…';
+      tc.fillStyle=hasOut||hasFill?ec:(forPrint?'#1a1a1a':co.txt);
+      tc.textAlign='left';tc.fillText(lbl,8,yCur+rh/2+4);
+      // 행 reorder 핸들 아이콘 (라벨 오른쪽 끝)
+      if(!forPrint){
+        tc.fillStyle='rgba(150,150,150,0.4)';tc.font='10px sans-serif';
+        tc.textAlign='right';tc.fillText('⠿',LABEL_W-5,yCur+rh/2+4);
+      }
+      tc.strokeStyle=co.bdMon;tc.lineWidth=0.5;
+      tc.beginPath();tc.moveTo(LABEL_W,yCur);tc.lineTo(LABEL_W,yCur+rh);tc.stroke();
+
+      // 바 + 텍스트
+      // 단계별 마일스톤 연동: msref가 있는 단계는 마일스톤 기준으로 시작점 재계산
+      let ps=gs2;
+      // 각 단계 시작점 사전 계산 (msref 연동 적용)
+      const phaseStarts=[];
+      let _ps=gs2;
+      g.phases.forEach((ph,pi)=>{
+        if(ph.msref){
+          const _ms=milestones.find(m=>m.id===ph.msref);
+          if(_ms){
+            phaseStarts.push(msWeek(_ms)+(ph.msoffset||0));
+            // 다음 단계 계속 흐름을 위해 _ps는 이 단계 끝으로
+            _ps=msWeek(_ms)+(ph.msoffset||0)+ph.dur;
+            return;
+          }
+        }
+        phaseStarts.push(_ps);
+        _ps+=ph.dur;
+      });
+      ps=gs2;
+      g.phases.forEach((ph,pi)=>{
+        const C2=PC[ph.color]||PC.blue;
+        const bx=wx(phaseStarts[pi]),bw=ph.dur*WW,by=yCur+BAR_PAD,bh=Math.max(8,rh-BAR_PAD*2);
+        const isLast=(pi===g.phases.length-1);
+        const isDragTarget=!forPrint&&drag.active&&drag.type==='resize'&&drag.gid===g.id&&drag.pi===pi;
+        if(bx+bw>LABEL_W&&bx<logicW){
+          const rx=Math.max(bx,LABEL_W),rw=Math.min(bx+bw,logicW)-rx;
+          if(rw>0){
+            const r=Math.min(3,bh/2,rw/2);
+            const isF=bx>=LABEL_W,isL=bx+bw<=logicW;
+            const patKey=ph.pattern||'solid';
+            const patFill=patKey==='solid'?C2.bar:makePattern(tc,C2.bar,patKey,scale);
+            tc.fillStyle=isDragTarget?(C2.bar+'bb'):(patFill||C2.bar);
+            tc.beginPath();
+            tc.moveTo(rx+(isF?r:0),by);tc.lineTo(rx+rw-(isL?r:0),by);
+            if(isL)tc.arcTo(rx+rw,by,rx+rw,by+r,r);
+            tc.lineTo(rx+rw,by+bh-(isL?r:0));
+            if(isL)tc.arcTo(rx+rw,by+bh,rx+rw-r,by+bh,r);
+            tc.lineTo(rx+(isF?r:0),by+bh);
+            if(isF)tc.arcTo(rx,by+bh,rx,by+bh-r,r);
+            tc.lineTo(rx,by+(isF?r:0));
+            if(isF)tc.arcTo(rx,by,rx+r,by,r);
+            tc.closePath();tc.fill();
+
+            // 단계 구분선
+            if(pi>0&&bx>LABEL_W){
+              tc.strokeStyle=forPrint?'rgba(255,255,255,0.9)':co.bg;tc.lineWidth=1.2;
+              tc.beginPath();tc.moveTo(bx,by+2);tc.lineTo(bx,by+bh-2);tc.stroke();
+            }
+            // 중간 단계 오른쪽 끝 핸들 힌트 (작은 흰색 삼각형)
+            if(!forPrint&&!isLast&&bx+bw>LABEL_W&&bx+bw<logicW){
+              const hx=bx+bw;
+              tc.fillStyle='rgba(255,255,255,0.65)';
+              tc.beginPath();
+              tc.moveTo(hx-5,by+bh/2-4);
+              tc.lineTo(hx,by+bh/2);
+              tc.lineTo(hx-5,by+bh/2+4);
+              tc.closePath();tc.fill();
+            }
+            // 텍스트 색상: auto=기본색, #ffffff=흰색, #000000=검정
+            const txColor = ph.textColor && ph.textColor!=='auto'
+              ? ph.textColor : C2.text;
+            // 텍스트 (겹침 방지) — bx/bw=실제 바, rx/rw=가시 영역
+            drawPhaseLabel(tc,ph.name,bx,by,bw,bh,txColor,C2.bar,yCur,logicW,rx,rw,yCur+rh);
+
+            if(!forPrint){
+              // 각 단계 오른쪽 끝에 resize 핸들 등록 (모든 단계)
+              hitAreas.push({type:'resize',gid:g.id,pi,
+                x1:bx+bw-9,x2:bx+bw+7,y1:by,y2:by+bh});
+              // 바 이동 (resize 영역 제외한 나머지)
+              hitAreas.push({type:'bar',gid:g.id,pi,
+                x1:bx,x2:bx+bw-9,y1:by,y2:by+bh});
+            }
+          }
+        }
+        ps=phaseStarts[pi]+ph.dur; // 다음 단계 시작 = 이 단계 끝
+      });
+      if(!forPrint){
+        // 라벨 열: 행 reorder 핸들
+        hitAreas.push({type:'row-reorder',gid:g.id,x1:0,x2:LABEL_W,y1:yCur,y2:yCur+rh});
+      }
+      gi++;
+    }
+    yCur+=rh;
+  });
+
+  // ── 마일스톤 ──
+  milestones.forEach(ms=>{
+    const x=wx(msWeek(ms));
+    tc.strokeStyle=ms.color||'#DD2222';
+    tc.lineWidth=forPrint?1.5:1.5;
+    tc.setLineDash([5,3]);
+    tc.beginPath();tc.moveTo(x,0);tc.lineTo(x,logicH);tc.stroke();tc.setLineDash([]);
+    tc.font='bold 9px sans-serif';tc.textAlign='center';
+    const tw=tc.measureText(ms.name).width+12;
+    tc.fillStyle=ms.color||'#DD2222';
+    rrFill(tc,x-tw/2,2,tw,16,3);
+    tc.fillStyle='#fff';tc.fillText(ms.name,x,13);
+    // hitArea는 년도 헤더 행(yYear~HDR_H)으로만 제한 → 바 영역 간섭 없음
+    if(!forPrint)hitAreas.push({type:'milestone',id:ms.id,x1:x-tw/2-4,x2:x+tw/2+4,y1:0,y2:HDR_H});
+  });
+
+  // ── 포인터 (삼각형+텍스트 마커) ──
+  pointers.forEach(pt=>{
+    const x=wx(pt.absWeek);
+    const col=pt.color||'#DD4444';
+    const lbl=pt.label||'';
+    const isAbove=pt.pos==='above';
+    // 연결 항목의 Y 범위 계산
+    let markerY=isAbove?HDR_H+8:logicH-8;
+    if(pt.gid){
+      let yCur2=HDR_H;
+      for(const row of rows){
+        const rh2=row.type==='sep'?SEP_H:ROW_H;
+        if(row.id===pt.gid){
+          markerY=isAbove?yCur2+4:yCur2+rh2-4;
+          break;
+        }
+        yCur2+=rh2;
+      }
+    }
+    // 삼각형
+    const ts=7; // 삼각형 크기
+    const badgeH2=15; // 텍스트 배지 높이
+    tc.fillStyle=col;
+    tc.beginPath();
+    if(isAbove){
+      tc.moveTo(x,markerY+ts);
+      tc.lineTo(x-ts,markerY);
+      tc.lineTo(x+ts,markerY);
+    } else {
+      tc.moveTo(x,markerY-ts);
+      tc.lineTo(x-ts,markerY);
+      tc.lineTo(x+ts,markerY);
+    }
+    tc.closePath();tc.fill();
+    // 텍스트 배지
+    if(lbl){
+      tc.font='bold 9px sans-serif';tc.textAlign='center';
+      const tw2=tc.measureText(lbl).width+10;
+      // 배지 X: 화면 안으로 클리핑
+      let badgeX=x-tw2/2;
+      badgeX=Math.max(LABEL_W+2, badgeX);
+      badgeX=Math.min(badgeX, logicW-tw2-2);
+      // 배지 Y: 위/아래 방향 + 캔버스 하단 초과 방지
+      let badgeY;
+      if(isAbove){
+        badgeY=markerY-badgeH2-2;
+        if(badgeY<HDR_H+2) badgeY=markerY+ts+2; // 헤더 침범시 삼각형 아래로
+      } else {
+        badgeY=markerY+ts+2;
+        if(badgeY+badgeH2>logicH-2) badgeY=markerY-badgeH2-ts-2; // 하단 초과시 위로
+      }
+      tc.fillStyle=col;
+      rrFill(tc,badgeX,badgeY,tw2,badgeH2,3);
+      tc.fillStyle='#fff';
+      tc.fillText(lbl,badgeX+tw2/2,badgeY+badgeH2-3);
+    }
+    // 세로 점선 (바 경계까지)
+    tc.strokeStyle=col;tc.lineWidth=1;tc.setLineDash([3,3]);
+    tc.beginPath();
+    if(isAbove){tc.moveTo(x,HDR_H);tc.lineTo(x,markerY+ts);}
+    else{tc.moveTo(x,markerY-ts);tc.lineTo(x,logicH);}
+    tc.stroke();tc.setLineDash([]);
+    if(!forPrint)hitAreas.push({type:'pointer',pid:pt.id,x1:x-ts-2,x2:x+ts+2,
+      y1:isAbove?markerY-14:markerY-ts,y2:isAbove?markerY+ts:markerY+14});
+  });
+
+  tc.setTransform(1,0,0,1,0,0);
+}
+
+function render(withHistory){
+  try{
+    renderToCtx(ctx,canvas,false);
+  }catch(err){
+    // 렌더링 오류 시 콘솔에만 기록, UI는 멈추지 않음
+    console.warn('render error:',err);
+    return;
+  }
+  if(withHistory!==false){
+    try{_pushHistory();}catch(e){}
+    try{_scheduleAutosave();}catch(e){}
+  }
+}
+
+// ═══════════════════════════════════════════
+// 드래그 (항목 + 구분선 + 마일스톤)
+// ═══════════════════════════════════════════
+let drag={active:false};
+
+// ── 좌표 추출 (마우스/터치 공통) ──────────────────────────────
+function canvasXY(e){
+  const r=canvas.getBoundingClientRect();
+  const cw=canvas.clientWidth||1;  // 0 방어
+  const ch=canvas.clientHeight||1;
+  const sx=canvas.width/cw/DPR;
+  const sy=canvas.height/ch/DPR;
+  const src=e.touches?e.touches[0]:(e.changedTouches?e.changedTouches[0]:e);
+  if(!src)return{x:0,y:0};
+  return{x:(src.clientX-r.left)*sx, y:(src.clientY-r.top)*sy};
+}
+
+// ── 더블탭 감지 ───────────────────────────────────────────────
+let _lastTap={t:0,x:0,y:0};
+function isDoubleTap(e){
+  const now=Date.now();
+  const src=e.touches?e.touches[0]:(e.changedTouches?e.changedTouches[0]:e);
+  const dx=src.clientX-_lastTap.x, dy=src.clientY-_lastTap.y;
+  const dt=now-_lastTap.t;
+  _lastTap={t:now,x:src.clientX,y:src.clientY};
+  return dt<320&&Math.hypot(dx,dy)<20;
+}
+
+// ── 공통 히트테스트 ───────────────────────────────────────────
+function hitTest(mx,my){
+  for(let i=hitAreas.length-1;i>=0;i--){
+    const h=hitAreas[i];
+    // 터치는 히트 영역을 12px 확장
+    const pad=isTouchDevice?12:0;
+    if(mx>=h.x1-pad&&mx<=h.x2+pad&&my>=h.y1-pad&&my<=h.y2+pad)return h;
+  }
+  return null;
+}
+const isTouchDevice=('ontouchstart' in window)||navigator.maxTouchPoints>0;
+
+// ── 공통 dragStart ────────────────────────────────────────────
+function handleStart(e,mx,my){
+  const h=hitTest(mx,my);
+  if(!h)return false;
+  if(h.type==='sep'){
+    drag={active:true,type:'move-sep',gid:h.id,startX:mx,startY:my};
+  } else if(h.type==='row-reorder'){
+    drag={active:true,type:'row-reorder',gid:h.gid,startX:mx,startY:my};
+  } else if(h.type==='milestone'){
+    const ms=milestones.find(m=>m.id===h.id);
+    if(ms)drag={active:true,type:'move-ms',msId:h.id,startX:mx,origMsW:msWeek(ms)};
+  } else if(h.type==='pointer'){
+    const pt=pointers.find(p=>p.id===h.pid);
+    if(pt)drag={active:true,type:'move-ptr',ptId:h.pid,startX:mx,origPtW:pt.absWeek};
+  } else {
+    const g=rows.find(r=>r.id===h.gid);if(!g)return false;
+    drag={active:true,type:h.type==='resize'?'resize':'move-group',
+      gid:h.gid,pi:h.pi||0,startX:mx,
+      origAbs:g.abs,origOffset:g.offset,
+      origDur:h.type==='resize'?g.phases[h.pi].dur:0};
+  }
+  return true;
+}
+
+// ── 공통 dragMove ─────────────────────────────────────────────
+function handleMove(e,mx,my){
+  if(!drag.active)return;
+  const dw2=Math.round((mx-drag.startX)/WW);
+  if(drag.type==='move-group'){
+    const g=rows.find(r=>r.id===drag.gid);if(!g)return;
+    if(g.anchor==='free')g.abs=Math.max(0,drag.origAbs+dw2);
+    else if(g.anchor==='recv_end')g.offset=drag.origOffset-dw2;
+    else if(g.anchor==='dep_end')g.offset=drag.origOffset+dw2;
+    if(!isTouchDevice)showTip(e,g.name+'\n시작: '+wlabel(groupStart(g)));
+  } else if(drag.type==='resize'){
+    const g=rows.find(r=>r.id===drag.gid);if(!g)return;
+    g.phases[drag.pi].dur=Math.max(1,drag.origDur+dw2);
+    const ph=g.phases[drag.pi];
+    if(!isTouchDevice)showTip(e,`[${ph.name}]\n기간: ${ph.dur}주`);
+  } else if(drag.type==='move-sep'||drag.type==='row-reorder'){
+    const newY=my;
+    let insertBefore=null,yCur2=HDR_H;
+    const rowH2=rows.map(r=>r.type==='sep'?SEP_H:ROW_H);
+    for(let i=0;i<rows.length;i++){
+      if(rows[i].id===drag.gid){yCur2+=rowH2[i];continue}
+      if(newY<yCur2+rowH2[i]/2){insertBefore=i;break}
+      yCur2+=rowH2[i];
+    }
+    const idx=rows.findIndex(r=>r.id===drag.gid);
+    if(idx>=0&&insertBefore!==null&&insertBefore!==idx&&insertBefore!==idx+1){
+      const [item]=rows.splice(idx,1);
+      rows.splice(insertBefore>idx?insertBefore-1:insertBefore,0,item);
+    }
+  } else if(drag.type==='move-ms'){
+    const ms=milestones.find(m=>m.id===drag.msId);if(!ms)return;
+    const nw=drag.origMsW+dw2;
+    ms.date=wd(nw).toISOString().slice(0,10);
+  } else if(drag.type==='move-ptr'){
+    const pt=pointers.find(p=>p.id===drag.ptId);if(!pt)return;
+    pt.absWeek=Math.max(0,drag.origPtW+dw2);
+  }
+  render(false); // 드래그 중: 히스토리 저장 없이 화면만 갱신
+}
+
+// ── 공통 dragEnd ──────────────────────────────────────────────
+function handleEnd(){
+  drag.active=false;
+  hideTip();
+  document.getElementById('gantt-wrap').style.touchAction='';
+  render(true); // 드래그 종료 후: 히스토리 저장 포함
+}
+
+// ── 공통 dblAction ────────────────────────────────────────────
+function handleDblAction(mx,my){
+  const h=hitTest(mx,my);
+  if(!h)return;
+  if(h.type==='sep')openEditSep(h.id);
+  else if(h.type==='milestone')openEditMsSingle(h.id);
+  else if(h.type==='pointer')openEditPointer(h.pid);
+  else if(h.gid)openEdit(h.gid);
+}
+
+// ══════════════════════════════════════════════════════════════
+// 마우스 이벤트
+// ══════════════════════════════════════════════════════════════
+canvas.addEventListener('mousemove',e=>{
+  try{
+  const pos=canvasXY(e);const mx=pos.x,my=pos.y;
+  if(drag.active){handleMove(e,mx,my);return;}
+  // hover 커서
+  const h=hitTest(mx,my);
+  if(h){
+    if(h.type==='resize')canvas.style.cursor='ew-resize';
+    else if(h.type==='sep'||h.type==='row-reorder')canvas.style.cursor='ns-resize';
+    else if(h.type==='milestone'||h.type==='pointer')canvas.style.cursor='ew-resize';
+    else canvas.style.cursor='grab';
+    hoverGid=h.gid||null;
+    if(h.type==='resize'){const g=rows.find(r=>r.id===h.gid);if(g){const ph=g.phases[h.pi];showTip(e,`[${ph.name}] 기간: ${ph.dur}주`);}}
+    else if(h.type==='sep')showTip(e,'드래그: 순서 이동 | 더블클릭: 편집');
+    else if(h.type==='row-reorder'){const g=rows.find(r=>r.id===h.gid);showTip(e,((g&&g.name)||'항목')+'\n위아래 드래그: 순서 이동');}
+    else if(h.type==='milestone'){const ms=milestones.find(m=>m.id===h.id);if(ms)showTip(e,ms.name+'\n드래그: 날짜 이동 | 더블클릭: 편집');}
+    else if(h.type==='pointer'){const pt=pointers.find(p=>p.id===h.pid);if(pt)showTip(e,(pt.label||'포인터')+'\n더블클릭: 편집');}
+    else if(h.type==='bar'){const g=rows.find(r=>r.id===h.gid);if(g)showTip(e,g.name+'\n시작: '+wlabel(groupStart(g))+'\n더블클릭: 편집');}
+    else hideTip();
+  } else {canvas.style.cursor='default';hoverGid=null;hideTip();}
+  render(false); // hover: 화면만 갱신
+  }catch(err){} // mousemove 예외 방어
+});
+
+canvas.addEventListener('mousedown',e=>{
+  const {x:mx,y:my}=canvasXY(e);
+  if(handleStart(e,mx,my))e.preventDefault();
+});
+window.addEventListener('mouseup',handleEnd);
+canvas.addEventListener('dblclick',e=>{
+  const {x:mx,y:my}=canvasXY(e);
+  handleDblAction(mx,my);
+});
+
+// ══════════════════════════════════════════════════════════════
+// 터치 이벤트
+// ══════════════════════════════════════════════════════════════
+let _touchMoved=false;
+canvas.addEventListener('touchstart',e=>{
+  _touchMoved=false;
+  const {x:mx,y:my}=canvasXY(e);
+  // 더블탭 감지
+  if(isDoubleTap(e)){
+    e.preventDefault();
+    handleDblAction(mx,my);
+    return;
+  }
+  const started=handleStart(e,mx,my);
+  if(started){
+    e.preventDefault();
+    // 드래그 중 부모 스크롤 막기
+    document.getElementById('gantt-wrap').style.touchAction='none';
+  }
+},{passive:false});
+
+canvas.addEventListener('touchmove',e=>{
+  if(!drag.active){
+    // 드래그 중 아닐 때 touchmove는 스크롤로 처리 (preventDefault 안 함)
+    return;
+  }
+  _touchMoved=true;
+  try{e.preventDefault();}catch(err){}
+  try{
+    const pos=canvasXY(e);
+    handleMove(e,pos.x,pos.y);
+  }catch(err){}
+},{passive:false});
+
+canvas.addEventListener('touchend',e=>{
+  if(drag.active){handleEnd();return;}
+  // 탭(클릭) 처리 — 이동하지 않았을 때만
+  if(!_touchMoved){
+    // 단순 탭: 툴팁 표시 (정보 확인용)
+    const {x:mx,y:my}=canvasXY(e);
+    const h=hitTest(mx,my);
+    if(h&&h.type==='bar'){
+      const g=rows.find(r=>r.id===h.gid);
+      if(g){
+        // 모바일: 툴팁 대신 하단 토스트
+        showToast(g.name+' — 시작: '+wlabel(groupStart(g))+'\n더블탭: 편집');
+      }
+    }
+  }
+});
+
+// ── 토스트 (모바일 피드백) ────────────────────────────────────
+let _toastTimer=null;
+function showToast(msg){
+  let t=document.getElementById('toast');
+  if(!t){
+    t=document.createElement('div');t.id='toast';
+    t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.78);color:#fff;padding:8px 14px;border-radius:20px;font-size:12px;z-index:9998;pointer-events:none;text-align:center;line-height:1.5;max-width:80vw;white-space:pre-line;opacity:0;transition:opacity .2s';
+    document.body.appendChild(t);
+  }
+  t.textContent=msg;t.style.opacity='1';
+  clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(()=>{t.style.opacity='0'},2400);
+}
+
+const tt=document.getElementById('tooltip');
+function showTip(e,txt){tt.style.display='block';tt.innerHTML=txt.replace(/\n/g,'<br>');tt.style.left=(e.clientX+14)+'px';tt.style.top=(e.clientY-10)+'px'}
+function hideTip(){tt.style.display='none'}
+
+// ═══════════════════════════════════════════
+// 마일스톤 모달 (일괄 관리)
+// ═══════════════════════════════════════════
+let tempMs=[];
+function openMsModal(){tempMs=milestones.map(m=>({...m}));renderMsList();document.getElementById('ms-modal-bg').classList.add('open')}
+function renderMsList(){
+  const el=document.getElementById('ms-list');el.innerHTML='';
+  if(!tempMs.length){el.innerHTML='<div class="ms-empty">마일스톤이 없습니다</div>';return}
+  tempMs.forEach((ms,i)=>{
+    const row=document.createElement('div');row.className='ms-row';
+    row.innerHTML=`<input type="color" value="${ms.color||'#DD2222'}" oninput="tempMs[${i}].color=this.value">
+      <input type="text" value="${ms.name}" oninput="tempMs[${i}].name=this.value" placeholder="이름">
+      <input type="date" value="${ms.date}" oninput="tempMs[${i}].date=this.value">
+      <button onclick="tempMs.splice(${i},1);renderMsList()" class="danger" style="padding:2px 7px">×</button>`;
+    el.appendChild(row);
+  });
+}
+function addMs(){tempMs.push({id:'ms'+Date.now(),name:'마일스톤',date:'2026-01-01',color:'#DD2222'});renderMsList()}
+function saveMilestones(){milestones=tempMs.map(m=>({...m}));closeMsModal();render()}
+function closeMsModal(){document.getElementById('ms-modal-bg').classList.remove('open')}
+
+// 마일스톤 단일 편집 (더블클릭)
+let editMsId=null;
+function openEditMsSingle(id){
+  editMsId=id;
+  const ms=milestones.find(m=>m.id===id);if(!ms)return;
+  document.getElementById('mse-name').value=ms.name;
+  document.getElementById('mse-date').value=ms.date;
+  document.getElementById('mse-color').value=ms.color||'#DD2222';
+  showSection('ms-edit');
+  document.getElementById('modal-title').textContent='마일스톤 편집: '+ms.name;
+  document.getElementById('modal-bg').classList.add('open');
+}
+function saveMsEdit(){
+  const ms=milestones.find(m=>m.id===editMsId);if(!ms)return;
+  ms.name=document.getElementById('mse-name').value;
+  ms.date=document.getElementById('mse-date').value;
+  ms.color=document.getElementById('mse-color').value;
+  closeModal();render();
+}
+function deleteMsEdit(){
+  if(!confirm('마일스톤을 삭제하시겠습니까?'))return;
+  milestones=milestones.filter(m=>m.id!==editMsId);
+  closeModal();render();
+}
+
+// ═══════════════════════════════════════════
+// 범례 모달
+// ═══════════════════════════════════════════
+let tempLeg=[];
+function openLegModal(){tempLeg=legendItems.map(l=>({...l}));renderLegList();document.getElementById('leg-modal-bg').classList.add('open')}
+function renderLegList(){
+  const el=document.getElementById('leg-list');el.innerHTML='';
+  if(!tempLeg.length){el.innerHTML='<div class="ms-empty">범례 항목이 없습니다</div>';return}
+  tempLeg.forEach((li,i)=>{
+    const row=document.createElement('div');row.className='leg-row';
+    row.innerHTML=`<input type="color" value="${li.color}" oninput="tempLeg[${i}].color=this.value;this.nextElementSibling.style.background=this.value">
+      <span style="width:14px;height:14px;border-radius:3px;background:${li.color};flex-shrink:0;display:inline-block;border:0.5px solid var(--bd2)"></span>
+      <input type="text" value="${li.name}" oninput="tempLeg[${i}].name=this.value" placeholder="이름">
+      <button onclick="tempLeg.splice(${i},1);renderLegList()" class="danger" style="padding:2px 7px">×</button>`;
+    el.appendChild(row);
+  });
+}
+function addLegItem(){tempLeg.push({color:'#888888',name:'새 항목'});renderLegList()}
+function saveLegend(){legendItems=tempLeg.map(l=>({...l}));closeLegModal();renderLegend()}
+function closeLegModal(){document.getElementById('leg-modal-bg').classList.remove('open')}
+
+// ═══════════════════════════════════════════
+// 구분선 모달
+// ═══════════════════════════════════════════
+let editSepId=null;
+function openAddSep(){
+  editSepId=null;
+  document.getElementById('sep-label').value='';
+  document.getElementById('sep-color').value='#aaaaaa';
+  document.getElementById('sep-del-btn').style.display='none';
+  showSection('sep');document.getElementById('modal-title').textContent='구분선 추가';
+  document.getElementById('modal-bg').classList.add('open');
+}
+function openEditSep(id){
+  editSepId=id;const s=rows.find(r=>r.id===id);
+  document.getElementById('sep-label').value=s.label||'';
+  document.getElementById('sep-color').value=s.color||'#aaaaaa';
+  document.getElementById('sep-del-btn').style.display='';
+  showSection('sep');document.getElementById('modal-title').textContent='구분선 편집';
+  document.getElementById('modal-bg').classList.add('open');
+}
+function saveSep(){
+  const label=document.getElementById('sep-label').value;
+  const color=document.getElementById('sep-color').value;
+  if(editSepId){const s=rows.find(r=>r.id===editSepId);if(s){s.label=label;s.color=color}}
+  else rows.push({type:'sep',id:'s'+Date.now(),label,color});
+  closeModal();render();
+}
+function deleteSep(){
+  if(!editSepId||!confirm('삭제하시겠습니까?'))return;
+  rows=rows.filter(r=>r.id!==editSepId);closeModal();render();
+}
+
+// ═══════════════════════════════════════════
+// 포인터 모달
+// ═══════════════════════════════════════════
+let editPtrId=null;
+function populatePtrGid(sel){
+  const s=document.getElementById('ptr-gid');
+  s.innerHTML='<option value="">없음 (전체 행)</option>';
+  rows.filter(r=>r.type==='group').forEach(r=>{
+    const o=document.createElement('option');o.value=r.id;o.textContent=r.name;
+    o.selected=r.id===sel;s.appendChild(o);
+  });
+}
+// 날짜 ↔ 주차 변환
+function dateToWeek(dateStr){
+  if(!dateStr)return 0;
+  return Math.round((new Date(dateStr+'T00:00:00')-ORIGIN)/(7*86400000));
+}
+function weekToDate(w){
+  const d=wd(w);
+  return d.toISOString().slice(0,10);
+}
+
+function openAddPointer(){
+  editPtrId=null;
+  document.getElementById('ptr-label').value='';
+  document.getElementById('ptr-date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('ptr-pos').value='above';
+  document.getElementById('ptr-color').value='#DD4444';
+  populatePtrGid('');
+  document.getElementById('ptr-del-btn').style.display='none';
+  document.getElementById('ptr-modal-title').textContent='▲ 포인터 추가';
+  document.getElementById('ptr-modal-bg').classList.add('open');
+}
+function openEditPointer(id){
+  editPtrId=id;
+  const pt=pointers.find(p=>p.id===id);if(!pt)return;
+  document.getElementById('ptr-label').value=pt.label||'';
+  document.getElementById('ptr-date').value=weekToDate(pt.absWeek||0);
+  document.getElementById('ptr-pos').value=pt.pos||'above';
+  document.getElementById('ptr-color').value=pt.color||'#DD4444';
+  populatePtrGid(pt.gid||'');
+  document.getElementById('ptr-del-btn').style.display='';
+  document.getElementById('ptr-modal-title').textContent='▲ 포인터 편집';
+  document.getElementById('ptr-modal-bg').classList.add('open');
+}
+function savePtrModal(){
+  const label=document.getElementById('ptr-label').value.trim();
+  const absWeek=dateToWeek(document.getElementById('ptr-date').value);
+  const gid=document.getElementById('ptr-gid').value;
+  const pos=document.getElementById('ptr-pos').value;
+  const color=document.getElementById('ptr-color').value;
+  if(editPtrId){
+    const pt=pointers.find(p=>p.id===editPtrId);
+    if(pt)Object.assign(pt,{label,absWeek,gid,pos,color});
+  } else {
+    pointers.push({id:'pt'+Date.now(),label,absWeek,gid,pos,color});
+  }
+  closePtrModal();render();
+}
+function deletePtrModal(){
+  if(!editPtrId||!confirm('삭제하시겠습니까?'))return;
+  pointers=pointers.filter(p=>p.id!==editPtrId);
+  closePtrModal();render();
+}
+function closePtrModal(){document.getElementById('ptr-modal-bg').classList.remove('open')}
+
+// ═══════════════════════════════════════════
+// 항목 편집 모달
+// ═══════════════════════════════════════════
+let editId=null,tempPhases=[],currentEmph='none';
+
+function showSection(type){
+  ['sep','ms-edit','group'].forEach(t=>{
+    document.getElementById(t+'-section').style.display=t===type?'block':'none';
+  });
+}
+function setEmph(v){
+  currentEmph=v;
+  document.querySelectorAll('.emph-chip').forEach(c=>c.classList.toggle('on',c.dataset.v===v));
+}
+function updateAUI(){
+  const v=document.getElementById('m-anchor').value;
+  document.getElementById('m-offset-row').style.display=v==='free'?'none':'flex';
+  document.getElementById('m-dep-row').style.display=v==='dep_end'?'flex':'none';
+  document.getElementById('m-ms-row').style.display=v==='recv_end'?'flex':'none';
+  document.getElementById('m-abs-row').style.display=v==='free'?'flex':'none';
+  document.getElementById('m-offset-lbl').textContent=v==='recv_end'?'종료 여유(주)':'오프셋(주)';
+  const h={recv_end:'마일스톤 N주 전에 이 항목 전체가 종료',dep_end:'선행항목 종료 후 N주 뒤 시작'};
+  document.getElementById('m-offset-hint').textContent=h[v]||'';
+}
+function renderPTable(){
+  const tb=document.getElementById('ptbody');tb.innerHTML='';
+  tempPhases.forEach((ph,i)=>{
+    const tr=document.createElement('tr');
+    const msOptions='<option value="">없음</option>'+milestones.map(m=>`<option value="${m.id}"${(ph.msref||'')=== m.id?' selected':''}>${m.name}</option>`).join('');
+    const txOpts=[
+      ['auto','자동'],['#ffffff','흰색'],['#000000','검정']
+    ].map(([v,n])=>`<option value="${v}"${(ph.textColor||'auto')===v?' selected':''}>${n}</option>`).join('');
+    tr.innerHTML=`<td style="text-align:center;color:var(--tx2)">${i+1}</td>
+      <td><input type="text" value="${ph.name}" oninput="tempPhases[${i}].name=this.value"></td>
+      <td><input type="number" min="1" max="200" value="${ph.dur}" oninput="tempPhases[${i}].dur=Math.max(1,parseInt(this.value)||1)"></td>
+      <td><select onchange="tempPhases[${i}].color=this.value">${Object.keys(PC).map(c=>`<option value="${c}"${ph.color===c?' selected':''}>${CNAMES[c]}</option>`).join('')}</select></td>
+      <td><select onchange="tempPhases[${i}].textColor=this.value" style="font-size:10px;width:100%">${txOpts}</select></td>
+      <td><select onchange="tempPhases[${i}].pattern=this.value">${Object.keys(PATTERNS).map(p=>`<option value="${p}"${(ph.pattern||'solid')===p?' selected':''}>${PATTERNS[p]}</option>`).join('')}</select></td>
+      <td><select onchange="tempPhases[${i}].msref=this.value" style="font-size:10px;width:100%">${msOptions}</select></td>
+      <td><input type="number" value="${ph.msoffset||0}" style="width:46px" title="마일스톤 기준 오프셋(주). 양수=이후, 음수=이전" oninput="tempPhases[${i}].msoffset=parseInt(this.value)||0"></td>
+      <td><div class="ph-btns">
+        <button onclick="mvPh(${i},-1)">↑</button>
+        <button onclick="mvPh(${i},1)">↓</button>
+        <button onclick="rmPh(${i})" class="danger">×</button>
+      </div></td>`;
+    tb.appendChild(tr);
+  });
+}
+function addPhase(){tempPhases.push({name:'새 단계',dur:4,color:'blue'});renderPTable()}
+function rmPh(i){if(tempPhases.length>1){tempPhases.splice(i,1);renderPTable()}}
+function mvPh(i,d){const j=i+d;if(j<0||j>=tempPhases.length)return;[tempPhases[i],tempPhases[j]]=[tempPhases[j],tempPhases[i]];renderPTable()}
+function populateMsSelect(sel){const s=document.getElementById('m-ms-ref');s.innerHTML='';milestones.forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=m.name;o.selected=m.id===sel;s.appendChild(o)})}
+function populateDepSelect(excl,sel){const s=document.getElementById('m-dep');s.innerHTML='<option value="">없음</option>';rows.filter(x=>x.type==='group'&&x.id!==excl).forEach(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.name;o.selected=x.id===sel;s.appendChild(o)})}
+
+function openEdit(id){
+  editId=id;const g=rows.find(x=>x.id===id&&x.type==='group');if(!g)return;
+  document.getElementById('m-name').value=g.name;
+  document.getElementById('m-anchor').value=g.anchor;
+  document.getElementById('m-offset').value=g.offset;
+  document.getElementById('m-abs-date').value=weekToDate(g.abs||0);
+  document.getElementById('emph-color').value=g.emphColor||'#FF8C00';
+  populateMsSelect(g.msref);populateDepSelect(id,g.dep);updateAUI();
+  setEmph(g.emph||'none');
+  tempPhases=g.phases.map(p=>({...p}));renderPTable();
+  document.getElementById('modal-title').textContent='편집: '+g.name;
+  document.getElementById('del-btn').style.display='';
+  document.getElementById('dup-btn').style.display='';
+  showSection('group');document.getElementById('modal-bg').classList.add('open');
+}
+function openAddGroup(){
+  editId=null;
+  document.getElementById('m-name').value='';
+  document.getElementById('m-anchor').value='free';
+  document.getElementById('m-offset').value=0;
+  document.getElementById('m-abs-date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('emph-color').value='#FF8C00';
+  populateMsSelect('');populateDepSelect('','');updateAUI();setEmph('none');
+  tempPhases=[{name:'단계 1',dur:4,color:'red'},{name:'단계 2',dur:4,color:'blue'},{name:'완료',dur:2,color:'green'}];
+  renderPTable();
+  document.getElementById('modal-title').textContent='항목 추가';
+  document.getElementById('del-btn').style.display='none';
+  document.getElementById('dup-btn').style.display='none';
+  showSection('group');document.getElementById('modal-bg').classList.add('open');
+}
+function saveGroup(){
+  const name=document.getElementById('m-name').value.trim();if(!name){alert('항목명 입력');return}
+  const anchor=document.getElementById('m-anchor').value;
+  const offset=parseInt(document.getElementById('m-offset').value)||0;
+  const abs=dateToWeek(document.getElementById('m-abs-date').value);
+  const dep=document.getElementById('m-dep').value;
+  const msref=document.getElementById('m-ms-ref').value||'';
+  const emph=currentEmph;
+  const emphColor=document.getElementById('emph-color').value;
+  const phases=tempPhases.map(p=>({...p,dur:Math.max(1,p.dur)}));
+  if(editId){Object.assign(rows.find(x=>x.id===editId),{name,anchor,offset,abs,dep,msref,emph,emphColor,phases})}
+  else rows.push({type:'group',id:'g'+Date.now(),name,anchor,offset,abs,dep,msref,emph,emphColor,phases});
+  closeModal();render();
+}
+function deleteGroup(){
+  if(!editId||!confirm('삭제하시겠습니까?'))return;
+  rows=rows.filter(x=>x.id!==editId);
+  rows.forEach(r=>{if(r.type==='group'&&r.dep===editId)r.dep=''});
+  closeModal();render();
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('open')}
+
+// ═══════════════════════════════════════════
+// JSON 저장/불러오기
+// ═══════════════════════════════════════════
+// HTML 파일명 기반으로 JSON 기본 파일명 설정 (같은 폴더에 저장 유도)
+let lastSavedFilename = (()=>{
+  try{
+    // location.pathname에서 파일명 추출, 확장자를 .json으로
+    const path=decodeURIComponent(window.location.pathname);
+    const base=path.split('/').pop().split('\\').pop();
+    if(base&&base.includes('.'))return base.replace(/\.[^.]+$/,'.json');
+  }catch(e){}
+  return '인허가일정.json';
+})();
+
+function getData(){
+  return{
+    title:document.getElementById('meta-title').value,
+    date:document.getElementById('meta-date').value,
+    memo:document.getElementById('memo').value,
+    rowHeight:ROW_H,
+    barPad:BAR_PAD,
+    legendItems,milestones,rows,pointers,periodBlocks
+  };
+}
+function setData(d){
+  if(d.title)document.getElementById('meta-title').value=d.title;
+  if(d.date)document.getElementById('meta-date').value=d.date;
+  if(d.memo)document.getElementById('memo').value=d.memo;
+  if(d.rowHeight){
+    ROW_H=d.rowHeight;
+    const sl=document.getElementById('row-height');
+    if(sl){sl.value=ROW_H;document.getElementById('rh-lbl').textContent=ROW_H+'px';}
+  }
+  if(d.barPad!==undefined){
+    BAR_PAD=d.barPad;
+    const sl=document.getElementById('bar-pad');
+    if(sl){sl.value=BAR_PAD;document.getElementById('bp-lbl').textContent=BAR_PAD+'px';}
+  }
+  if(d.legendItems)legendItems=JSON.parse(JSON.stringify(d.legendItems));
+  if(d.milestones)milestones=JSON.parse(JSON.stringify(d.milestones));
+  if(d.rows)rows=JSON.parse(JSON.stringify(d.rows));
+  else if(d.groups)rows=JSON.parse(JSON.stringify(d.groups));
+  if(d.pointers)pointers=JSON.parse(JSON.stringify(d.pointers));
+  if(d.periodBlocks)periodBlocks=JSON.parse(JSON.stringify(d.periodBlocks));
+  renderLegend();render();
+}
+function resetToDefault(){
+  if(!confirm('기본 데이터로 초기화하시겠습니까?\n저장되지 않은 변경사항은 사라집니다.'))return;
+  setData(_DEFAULT_DATA);
+  lastSavedFilename='인허가일정.json';
+}
+
+function saveAsJson(filename){
+  const blob=new Blob([JSON.stringify(getData(),null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+  a.click();
+  lastSavedFilename=filename;
+}
+
+function doExport(){
+  // 이전에 저장한 파일이 있으면 덮어쓰기 / 다른이름 선택
+  const hasHistory = lastSavedFilename !== '인허가일정.json' ||
+    document.getElementById('import-file').dataset.loaded === '1';
+
+  // 간단한 커스텀 다이얼로그
+  const overlay = document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9000;display:flex;align-items:center;justify-content:center';
+  const box = document.createElement('div');
+  box.style.cssText='background:var(--bg);border:0.5px solid var(--bd2);border-radius:12px;padding:20px;width:340px;font-family:inherit;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
+  box.innerHTML=`
+    <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--tx)">💾 JSON 저장</div>
+    <div style="font-size:12px;color:var(--tx2);margin-bottom:10px">파일명을 입력하거나 기존 파일에 덮어씁니다.</div>
+    <input id="save-filename" type="text" value="${lastSavedFilename}"
+      style="width:100%;font-size:12px;padding:6px 9px;border-radius:8px;border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx);margin-bottom:12px;font-family:inherit">
+    <div style="display:flex;gap:6px;justify-content:flex-end">
+      <button id="save-cancel" style="font-size:12px;padding:5px 12px;border-radius:8px;border:0.5px solid var(--bd2);background:transparent;color:var(--tx2);cursor:pointer">취소</button>
+      <button id="save-confirm" style="font-size:12px;padding:5px 14px;border-radius:8px;border:none;background:var(--acc-bg);color:var(--acc-tx);cursor:pointer;font-weight:500">저장</button>
+    </div>`;
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  const inp = box.querySelector('#save-filename');
+  inp.focus();inp.select();
+
+  const close = ()=>document.body.removeChild(overlay);
+  box.querySelector('#save-cancel').onclick=close;
+  overlay.onclick=e=>{if(e.target===overlay)close()};
+
+  const doSave=()=>{
+    let fn=inp.value.trim()||lastSavedFilename;
+    if(!fn.endsWith('.json'))fn+='.json';
+    saveAsJson(fn);
+    close();
+  };
+  box.querySelector('#save-confirm').onclick=doSave;
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')doSave();if(e.key==='Escape')close()});
+}
+
+function doImport(){document.getElementById('import-file').click()}
+function handleImport(e){
+  const f=e.target.files[0];if(!f)return;
+  lastSavedFilename=f.name; // 불러온 파일명 기억
+  document.getElementById('import-file').dataset.loaded='1';
+  const r=new FileReader();
+  r.onload=ev=>{try{setData(JSON.parse(ev.target.result))}catch{alert('JSON 형식이 올바르지 않습니다.')}};
+  r.readAsText(f);e.target.value='';
+}
+
+// ═══════════════════════════════════════════
+// PDF 출력 + 자동 JSON 저장
+// ═══════════════════════════════════════════
+function exportPDF(){
+  // 1) JSON 자동 저장
+  doExport();
+
+  const title=document.getElementById('meta-title').value;
+  const dt=document.getElementById('meta-date').value;
+  const memo=document.getElementById('memo').value;
+
+  // 2) 고해상도 캔버스 렌더
+  const pc=document.createElement('canvas');
+  const pctx=pc.getContext('2d');
+  renderToCtx(pctx,pc,true);
+  const dataURL=pc.toDataURL('image/png',1.0);
+
+  // 3) PDF 인쇄창
+  const win=window.open('','_blank');
+  if(!win){alert('팝업 차단됨 — 허용 후 다시 시도');return}
+  win.document.write(`<!DOCTYPE html><html lang="ko"><head>
+  <meta charset="UTF-8"><title>${title}</title>
+  <style>
+    @page{size:A3 landscape;margin:10mm 10mm 8mm 10mm}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Malgun Gothic',sans-serif;background:#fff;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .hdr{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:5px;border-bottom:1.5px solid #aaa;margin-bottom:6px}
+    .hdr-title{font-size:15px;font-weight:700;color:#1a1a2e;letter-spacing:-0.3px}
+    .hdr-meta{font-size:10px;color:#888;text-align:right;line-height:1.6}
+    .chart{width:100%;text-align:center}
+    .chart img{max-width:100%;height:auto;display:block}
+    .memo-box{margin-top:6px;font-size:9px;color:#555;border-top:0.5px solid #ddd;padding-top:4px;line-height:1.7}
+    .foot{margin-top:4px;text-align:right;font-size:8px;color:#bbb}
+  </style></head><body>
+    <div class="hdr">
+      <div class="hdr-title">${title}</div>
+      <div class="hdr-meta">${dt||''}</div>
+    </div>
+    <div class="chart"><img src="${dataURL}"></div>
+    ${memo?`<div class="memo-box">${memo.replace(/\n/g,'<br>')}</div>`:''}
+    <div class="foot">출력일: ${new Date().toLocaleDateString('ko-KR')}</div>
+  <script>window.onload=()=>{setTimeout(()=>window.print(),600)}<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+// ═══════════════════════════════════════════
+// Undo / Redo
+// ═══════════════════════════════════════════
+const HISTORY_MAX=50;
+let _history=[];
+let _historyIdx=-1;
+let _historyPaused=false;
+
+function _snapshot(){
+  // 현재 상태 직렬화
+  return JSON.stringify({
+    rows:rows,milestones:milestones,pointers:pointers,legendItems:legendItems,
+    title:document.getElementById('meta-title').value,
+    memo:document.getElementById('memo').value,
+  });
+}
+function _pushHistory(){
+  if(_historyPaused)return;
+  const snap=_snapshot();
+  // 현재 위치 이후 기록 삭제
+  _history=_history.slice(0,_historyIdx+1);
+  // 마지막과 같으면 스킵
+  if(_history.length>0&&_history[_history.length-1]===snap)return;
+  _history.push(snap);
+  if(_history.length>HISTORY_MAX)_history.shift();
+  _historyIdx=_history.length-1;
+  _updateUndoBtn();
+}
+function _restoreSnapshot(snap){
+  _historyPaused=true;
+  const d=JSON.parse(snap);
+  rows=d.rows;milestones=d.milestones;pointers=d.pointers;legendItems=d.legendItems;
+  document.getElementById('meta-title').value=d.title||'';
+  document.getElementById('memo').value=d.memo||'';
+  _historyPaused=false;
+  renderLegend();render();
+}
+function _updateUndoBtn(){
+  const u=document.getElementById('btn-undo');
+  const r=document.getElementById('btn-redo');
+  if(u){u.disabled=_historyIdx<=0;u.style.opacity=_historyIdx<=0?'0.35':'1';}
+  if(r){r.disabled=_historyIdx>=_history.length-1;r.style.opacity=_historyIdx>=_history.length-1?'0.35':'1';}
+}
+function doUndo(){
+  if(_historyIdx<=0)return;
+  _historyIdx--;
+  _restoreSnapshot(_history[_historyIdx]);
+  _updateUndoBtn();
+  showToast('실행 취소');
+}
+function doRedo(){
+  if(_historyIdx>=_history.length-1)return;
+  _historyIdx++;
+  _restoreSnapshot(_history[_historyIdx]);
+  _updateUndoBtn();
+  showToast('다시 실행');
+}
+// Ctrl+Z / Ctrl+Y 키보드 단축키
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!e.shiftKey){e.preventDefault();doUndo();}
+  if((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.key==='z'&&e.shiftKey))){e.preventDefault();doRedo();}
+});
+
+// render 래퍼는 renderToCtx 직접 호출로 대체
+// (Safari에서 function 재선언 금지 → _renderCore로 분리)
+
+
+// ═══════════════════════════════════════════
+// 자동저장 (localStorage)
+// ═══════════════════════════════════════════
+const LS_KEY='inhoga_gantt_autosave';
+let _autosaveTimer=null;
+
+function _lsSet(key,val){try{localStorage.setItem(key,val);return true;}catch(e){return false;}}
+function _lsGet(key){try{return localStorage.getItem(key);}catch(e){return null;}}
+
+function _scheduleAutosave(){
+  clearTimeout(_autosaveTimer);
+  _autosaveTimer=setTimeout(()=>{
+    const data=Object.assign({},getData(),{_savedAt:new Date().toISOString()});
+    const ok=_lsSet(LS_KEY,JSON.stringify(data));
+    _setBadge(ok?'자동저장됨':'저장불가(사생활보호)',ok?'#52B96A':'#aaa');
+  },1200);
+}
+function _setBadge(msg,color){
+  const b=document.getElementById('autosave-badge');
+  if(!b)return;
+  b.textContent=msg;b.style.color=color;
+  clearTimeout(b._t);
+  b._t=setTimeout(()=>{b.textContent='';},3000);
+}
+
+function loadAutosave(){
+  try{
+    const s=_lsGet(LS_KEY);
+    if(!s)return false;
+    const d=JSON.parse(s);
+    const savedAt=new Date(d._savedAt);
+    const min=Math.round((Date.now()-savedAt)/60000);
+    const label=min<1?'방금 전':min<60?min+'분 전':Math.round(min/60)+'시간 전';
+    if(confirm(`자동저장된 데이터가 있습니다.
+저장 시점: ${savedAt.toLocaleString('ko-KR')} (${label})
+
+불러오시겠습니까?
+(취소하면 기본 데이터로 시작합니다)`)){
+      setData(d);return true;
+    }
+  }catch(e){}
+  return false;
+}
+
+// ═══════════════════════════════════════════
+// 항목 복제
+// ═══════════════════════════════════════════
+function duplicateGroup(id){
+  const g=rows.find(r=>r.id===id&&r.type==='group');
+  if(!g)return;
+  const copy=JSON.parse(JSON.stringify(g));
+  copy.id='g'+Date.now();
+  copy.name=g.name+' (복사)';
+  const idx=rows.findIndex(r=>r.id===id);
+  rows.splice(idx+1,0,copy);
+  render();
+  showToast(g.name+' 복제됨');
+}
+
+// ═══════════════════════════════════════════
+// 기간 블록 (명절·공백 기간 표시)
+// ═══════════════════════════════════════════
+let periodBlocks=[
+  // 기본: 설날·추석 예시 (absWeek 기준)
+  // {id, label, startWeek, endWeek, color}
+];
+
+function openPeriodModal(){
+  renderPeriodList();
+  document.getElementById('period-modal-bg').classList.add('open');
+}
+function renderPeriodList(){
+  const el=document.getElementById('period-list');el.innerHTML='';
+  if(!periodBlocks.length){el.innerHTML='<div style="padding:10px;text-align:center;font-size:11px;color:var(--tx3)">추가된 기간이 없습니다</div>';return;}
+  periodBlocks.forEach((pb,i)=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:6px;padding:5px 8px;border-bottom:0.5px solid var(--bd);background:var(--bg)';
+    row.innerHTML=`
+      <input type="color" value="${pb.color||'#FFEECC'}" oninput="periodBlocks[${i}].color=this.value" style="width:26px;height:22px;border-radius:3px;cursor:pointer;border:0.5px solid var(--bd2)">
+      <input type="text" value="${pb.label||''}" placeholder="명칭 (예: 설날)" oninput="periodBlocks[${i}].label=this.value" style="flex:1;font-size:11px;padding:2px 5px;border-radius:4px;border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx)">
+      <label style="font-size:10px;color:var(--tx2)">시작주</label>
+      <input type="number" value="${pb.startWeek}" oninput="periodBlocks[${i}].startWeek=parseInt(this.value)||0" style="width:54px;font-size:11px;padding:2px 5px;border-radius:4px;border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx)">
+      <label style="font-size:10px;color:var(--tx2)">종료주</label>
+      <input type="number" value="${pb.endWeek}" oninput="periodBlocks[${i}].endWeek=parseInt(this.value)||0" style="width:54px;font-size:11px;padding:2px 5px;border-radius:4px;border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx)">
+      <button onclick="periodBlocks.splice(${i},1);renderPeriodList()" style="font-size:10px;padding:1px 6px;border:0.5px solid var(--bd2);border-radius:3px;color:var(--dan-tx);background:transparent;cursor:pointer">×</button>`;
+    el.appendChild(row);
+  });
+}
+function addPeriodBlock(){
+  periodBlocks.push({id:'pb'+Date.now(),label:'',startWeek:0,endWeek:4,color:'#FFF3CD'});
+  renderPeriodList();
+}
+function savePeriodBlocks(){
+  document.getElementById('period-modal-bg').classList.remove('open');
+  render();
+}
+
+// ═══════════════════════════════════════════
+// 일정 요약 패널
+// ═══════════════════════════════════════════
+function openSummaryPanel(){
+  const today=new Date();
+  const todayW=Math.round((today-ORIGIN)/(7*86400000));
+  let html2='<div style="font-size:13px;font-weight:600;margin-bottom:10px">📊 일정 요약</div>';
+
+  // 마일스톤 D-day
+  html2+='<div style="font-size:11px;font-weight:500;color:var(--tx2);margin-bottom:6px;border-bottom:0.5px solid var(--bd);padding-bottom:4px">마일스톤 D-day</div>';
+  milestones.forEach(ms=>{
+    const mw=msWeek(ms);
+    const diff=mw-todayW;
+    const label=diff===0?'오늘':diff>0?`D-${diff}`:`D+${Math.abs(diff)}`;
+    const color=diff<0?'#E85D5D':diff===0?'#F5A623':'#5B8DEF';
+    html2+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:12px">
+      <span style="display:flex;align-items:center;gap:6px">
+        <span style="width:8px;height:8px;border-radius:50%;background:${ms.color||'#DD2222'};flex-shrink:0;display:inline-block"></span>
+        ${ms.name}
+      </span>
+      <span style="font-weight:600;color:${color}">${label} (${ms.date})</span>
+    </div>`;
+  });
+
+  // 전체 기간
+  const allGs=rows.filter(r=>r.type==='group');
+  if(allGs.length){
+    const allS=allGs.map(g=>groupStart(g));
+    const allE=allGs.map((g,i)=>allS[i]+g.phases.reduce((s,p)=>s+p.dur,0));
+    const minW2=Math.min(...allS),maxW2=Math.max(...allE);
+    const totalWks=maxW2-minW2;
+    html2+=`<div style="font-size:11px;font-weight:500;color:var(--tx2);margin:10px 0 6px;border-bottom:0.5px solid var(--bd);padding-bottom:4px">전체 일정</div>`;
+    html2+=`<div style="font-size:12px;padding:3px 0">총 기간: <b>${totalWks}주</b> (약 ${Math.round(totalWks/4)}개월)</div>`;
+    html2+=`<div style="font-size:12px;padding:3px 0">시작: ${wlabel(minW2)}</div>`;
+    html2+=`<div style="font-size:12px;padding:3px 0">종료: ${wlabel(maxW2)}</div>`;
+
+    // 진행률 (오늘 기준)
+    if(todayW>=minW2&&todayW<=maxW2){
+      const pct=Math.round((todayW-minW2)/(maxW2-minW2)*100);
+      html2+=`<div style="font-size:12px;padding:3px 0">진행률: <b>${pct}%</b></div>`;
+      html2+=`<div style="height:6px;background:var(--bg2);border-radius:3px;margin-top:4px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:#5B8DEF;border-radius:3px;transition:width .3s"></div></div>`;
+    }
+  }
+  document.getElementById('summary-content').innerHTML=html2;
+  document.getElementById('summary-modal-bg').classList.add('open');
+}
+
+// ═══════════════════════════════════════════
+// 초기화
+// ═══════════════════════════════════════════
+document.getElementById('meta-date').value=new Date().toISOString().slice(0,10);
+document.getElementById('zoom').addEventListener('input',e=>{
+  WW=parseInt(e.target.value);
+  document.getElementById('zoom-lbl').textContent=WW+'px';
+  render();
+});
+document.getElementById('row-height').addEventListener('input',e=>{
+  ROW_H=parseInt(e.target.value);
+  document.getElementById('rh-lbl').textContent=ROW_H+'px';
+  render();
+});
+document.getElementById('bar-pad').addEventListener('input',e=>{
+  BAR_PAD=parseInt(e.target.value);
+  document.getElementById('bp-lbl').textContent=BAR_PAD+'px';
+  render();
+});
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{renderLegend();render()});
+renderLegend();
+// 자동저장 데이터 확인 후 시작
+_historyPaused=true;
+if(!loadAutosave()){
+  // 기본 데이터로 시작
+}
+_historyPaused=false;
+render(); // 첫 스냅샷 생성
+_updateUndoBtn();
+</script>
+</body>
+</html>
