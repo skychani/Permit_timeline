@@ -146,6 +146,7 @@ input[type=range]{width:68px;accent-color:var(--acc)}
     <span id="bp-lbl" style="font-size:11px;color:var(--tx2);min-width:24px">5px</span>
     <div class="vsep"></div>
     <button onclick="doExport()">💾 JSON</button>
+    <button onclick="exportAsURL()" title="현재 데이터를 URL에 인코딩하여 클립보드 복사 — Notion 임베드 URL로 사용">🔗 URL복사</button>
     <button onclick="doImport()">📂 불러오기</button>
     <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImport(event)">
     <button onclick="resetToDefault()" style="font-size:11px;padding:4px 8px;color:var(--tx3)">↺ 초기화</button>
@@ -2178,6 +2179,64 @@ function saveAsJson(filename){
   lastSavedFilename=filename;
 }
 
+// ═══════════════════════════════════════════
+// URL 파라미터 저장/복원 (Notion 임베드 대응)
+// ═══════════════════════════════════════════
+function loadFromURL(){
+  try{
+    const params=new URLSearchParams(window.location.search);
+    const encoded=params.get('data');
+    if(!encoded)return null;
+    const decoded=decodeURIComponent(escape(atob(encoded)));
+    return JSON.parse(decoded);
+  }catch(e){
+    console.warn('URL 파라미터 파싱 실패:',e);
+    return null;
+  }
+}
+
+function exportAsURL(){
+  try{
+    const data=JSON.stringify(getData());
+    const encoded=btoa(unescape(encodeURIComponent(data)));
+    const baseURL=window.location.origin+window.location.pathname;
+    const fullURL=baseURL+'?data='+encoded;
+
+    // 길이 경고 (Notion 임베드 URL은 ~2000자 권장)
+    const warn=fullURL.length>4000
+      ?'\n\n주의: URL 길이가 '+fullURL.length+'자입니다.\nNotion 임베드에서 잘릴 수 있습니다.\n데이터를 줄이거나 GitHub fetch 방식 전환을 권장합니다.'
+      :'';
+
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(fullURL).then(()=>{
+        showToast('URL 복사 완료 ('+fullURL.length+'자)'+warn);
+        if(warn)alert('URL 복사됨\n'+warn);
+      }).catch(()=>_fallbackCopyURL(fullURL,warn));
+    }else{
+      _fallbackCopyURL(fullURL,warn);
+    }
+  }catch(e){
+    alert('URL 생성 실패: '+e.message);
+  }
+}
+
+function _fallbackCopyURL(url,warn){
+  // clipboard API 미지원 환경 (Safari 일부) 대응
+  const ta=document.createElement('textarea');
+  ta.value=url;
+  ta.style.cssText='position:fixed;top:-9999px;left:-9999px';
+  document.body.appendChild(ta);
+  ta.focus();ta.select();
+  try{
+    document.execCommand('copy');
+    showToast('URL 복사 완료 ('+url.length+'자)');
+    if(warn)alert('URL 복사됨\n'+warn);
+  }catch(e){
+    alert('자동 복사 실패.\n아래 URL을 직접 복사하세요:\n\n'+url);
+  }
+  document.body.removeChild(ta);
+}
+
 function doExport(){
   // 이전에 저장한 파일이 있으면 덮어쓰기 / 다른이름 선택
   const hasHistory = lastSavedFilename !== '인허가일정.json' ||
@@ -2583,8 +2642,13 @@ document.getElementById('bar-pad').addEventListener('input',e=>{
 matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{renderLegend();render()});
 renderLegend();
 // 자동저장 데이터 확인 후 시작
+// 우선순위: 1) URL 파라미터 → 2) localStorage → 3) 기본 데이터
 _historyPaused=true;
-if(!loadAutosave()){
+const _urlData=loadFromURL();
+if(_urlData){
+  setData(_urlData);
+  _setBadge('URL 데이터 로드됨','#5B8DEF');
+}else if(!loadAutosave()){
   // 기본 데이터로 시작
 }
 _historyPaused=false;
