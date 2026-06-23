@@ -2584,18 +2584,20 @@ document.getElementById('bar-pad').addEventListener('input',e=>{
 });
 matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{renderLegend();render()});
 renderLegend();
-// 우선순위: 1) data/project.json fetch → 2) localStorage → 3) 기본 데이터
+// 우선순위: 1) ?project= 파라미터로 data/{name}.json fetch → 2) localStorage → 3) 기본 데이터
 (async function _init(){
   _historyPaused=true;
 
-  // 1) GitHub Pages 배포 JSON 파일 시도
+  // 1) URL 파라미터 ?project= 로 파일명 지정 (기본값: project)
+  //    예) ?project=마포구역  →  ./data/마포구역.json
   let fetchedOk=false;
   try{
-    const res=await fetch('./data/project.json',{cache:'no-cache'});
+    const _pName=(new URLSearchParams(window.location.search)).get('project')||'project';
+    const res=await fetch('./data/'+encodeURIComponent(_pName)+'.json',{cache:'no-cache'});
     if(res.ok){
       const d=await res.json();
       setData(d);
-      _setBadge('프로젝트 데이터 로드됨','#52B96A');
+      _setBadge('['+_pName+'] 로드됨','#52B96A');
       fetchedOk=true;
     }
   }catch(e){
