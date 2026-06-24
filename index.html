@@ -49,6 +49,14 @@ button#btn-lock.locked{background:#fff8e1;color:#b45309;border-color:#f59e0b}
 @media(prefers-color-scheme:dark){
   button#btn-lock.locked{background:#3a2a00;color:#fbbf24;border-color:#f59e0b}
 }
+@keyframes lock-flash{
+  0%,100%{opacity:1;transform:scale(1)}
+  20%{opacity:0.25;transform:scale(0.93)}
+  40%{opacity:1;transform:scale(1.07)}
+  60%{opacity:0.25;transform:scale(0.93)}
+  80%{opacity:1;transform:scale(1)}
+}
+button#btn-lock.flash{animation:lock-flash .55s ease}
 #hdr-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 #main{flex:1;overflow:auto;padding:9px 14px}
 #footer{background:var(--bg);border-top:0.5px solid var(--bd);padding:7px 14px;flex-shrink:0}
@@ -1749,7 +1757,7 @@ const isTouchDevice=('ontouchstart' in window)||navigator.maxTouchPoints>0;
 
 // ── 공통 dragStart ────────────────────────────────────────────
 function handleStart(e,mx,my){
-  if(_editLocked)return false;
+  if(_editLocked){_flashLock();return false;}
   const h=hitTest(mx,my);
   if(!h)return false;
   if(h.type==='sep'){
@@ -1822,7 +1830,7 @@ function handleEnd(){
 
 // ── 공통 dblAction ────────────────────────────────────────────
 function handleDblAction(mx,my){
-  if(_editLocked){showToast('🔒 잠금 상태 — 편집하려면 잠금을 해제하세요');return;}
+  if(_editLocked){_flashLock();showToast('🔒 잠금 상태 — 편집하려면 잠금을 해제하세요');return;}
   const h=hitTest(mx,my);
   if(!h)return;
   if(h.type==='sep')openEditSep(h.id);
@@ -2664,13 +2672,22 @@ function openSummaryPanel(){
 // ═══════════════════════════════════════════
 // 편집 잠금 (Lock / Unlock)
 // ═══════════════════════════════════════════
-var _editLocked=false;
+var _editLocked=true;
 
 function toggleLock(){
   _editLocked=!_editLocked;
   _applyLockUI();
   try{localStorage.setItem('_editLocked',_editLocked?'1':'0');}catch(e){}
   showToast(_editLocked?'🔒 잠금 — 실수로 수정되지 않습니다':'🔓 편집 모드');
+}
+
+function _flashLock(){
+  var btn=document.getElementById('btn-lock');
+  btn.classList.remove('flash');
+  // reflow 강제로 애니메이션 재시작
+  void btn.offsetWidth;
+  btn.classList.add('flash');
+  btn.addEventListener('animationend',function h(){btn.classList.remove('flash');btn.removeEventListener('animationend',h);});
 }
 
 function _applyLockUI(){
@@ -2688,17 +2705,15 @@ function _applyLockUI(){
   }
 }
 
-// 잠금 상태 복원
+// 잠금 상태 복원 — 저장값 없으면 기본 잠금 유지, '0'일 때만 편집 모드
 (function(){
   var saved;
   try{saved=localStorage.getItem('_editLocked');}catch(e){}
-  if(saved==='1'){
-    _editLocked=true;
-    // DOM 준비 후 적용
-    window.addEventListener('DOMContentLoaded',_applyLockUI);
-    // 이미 DOMContentLoaded 지난 경우 즉시 적용
-    if(document.readyState!=='loading')_applyLockUI();
-  }
+  // saved===null(최초) or '1' → 잠금 유지(기본값이 true이므로 그대로)
+  // saved==='0' → 편집 모드로 전환
+  if(saved==='0') _editLocked=false;
+  if(document.readyState!=='loading')_applyLockUI();
+  else window.addEventListener('DOMContentLoaded',_applyLockUI);
 })();
 
 // ═══════════════════════════════════════════
