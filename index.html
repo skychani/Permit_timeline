@@ -118,6 +118,44 @@ input[type=range]{width:68px;accent-color:var(--acc)}
 }
 /* 캔버스 터치 스크롤 허용 (드래그 중에만 막음) */
 #gantt-wrap{-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+
+/* ── 모바일 세로방향 회전 안내 오버레이 ── */
+#rotate-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(28,28,30,0.96);
+  z-index:99999;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
+  color:#f0f0f0;
+  text-align:center;
+  padding:24px;
+}
+#rotate-overlay svg{
+  animation:rotate-hint 1.8s ease-in-out infinite;
+}
+@keyframes rotate-hint{
+  0%,100%{transform:rotate(0deg)}
+  40%{transform:rotate(90deg)}
+  60%{transform:rotate(90deg)}
+}
+#rotate-overlay .ro-title{font-size:17px;font-weight:600;letter-spacing:-0.3px}
+#rotate-overlay .ro-sub{font-size:13px;color:#aaa;line-height:1.6}
+#rotate-overlay .ro-skip{
+  margin-top:8px;font-size:12px;color:#666;
+  text-decoration:underline;cursor:pointer;
+  padding:8px 16px;border-radius:8px;
+  transition:color .15s;
+}
+#rotate-overlay .ro-skip:hover{color:#999}
+
+/* 터치 디바이스의 세로 방향에서만 오버레이 표시
+   — JS로 제어하므로 CSS 미디어쿼리는 보조 역할 */
+@media(hover:none) and (orientation:portrait){
+  #rotate-overlay.active{display:flex}
+}
 </style>
 </head>
 <body>
@@ -180,6 +218,22 @@ input[type=range]{width:68px;accent-color:var(--acc)}
 </div>
 
 <div id="tooltip"></div>
+
+<!-- 모바일 세로방향 회전 안내 오버레이 -->
+<div id="rotate-overlay">
+  <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="18" y="4" width="28" height="48" rx="5" stroke="#f0f0f0" stroke-width="2.5" fill="none"/>
+    <circle cx="32" cy="46" r="2.5" fill="#f0f0f0" opacity="0.5"/>
+    <rect x="26" y="8" width="12" height="2" rx="1" fill="#f0f0f0" opacity="0.4"/>
+    <path d="M10 54 Q10 60 16 60" stroke="#5b9cf6" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    <path d="M54 10 Q54 4 48 4" stroke="#5b9cf6" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    <polyline points="6,54 10,54 10,58" stroke="#5b9cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <polyline points="54,14 54,10 50,10" stroke="#5b9cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </svg>
+  <div class="ro-title">화면을 가로로 돌려주세요</div>
+  <div class="ro-sub">인허가 일정표는 가로 방향에서<br>편리하게 볼 수 있습니다</div>
+  <div class="ro-skip" id="rotate-skip">그냥 세로로 볼게요</div>
+</div>
 
 <!-- 기간 블록 모달 -->
 <div class="modal-bg" id="period-modal-bg" onclick="if(event.target===this)document.getElementById('period-modal-bg').classList.remove('open')">
@@ -2562,6 +2616,60 @@ function openSummaryPanel(){
   document.getElementById('summary-content').innerHTML=html2;
   document.getElementById('summary-modal-bg').classList.add('open');
 }
+
+// ═══════════════════════════════════════════
+// 모바일 세로방향 회전 안내
+// ═══════════════════════════════════════════
+(function(){
+  var overlay=document.getElementById('rotate-overlay');
+  var skipBtn=document.getElementById('rotate-skip');
+  var skipped=false;
+
+  function _isTouch(){
+    return ('ontouchstart' in window)||navigator.maxTouchPoints>0;
+  }
+
+  function isPortrait(){
+    // screen.orientation 우선, fallback: window.innerWidth/Height 비교
+    if(window.screen&&window.screen.orientation){
+      var t=window.screen.orientation.type;
+      return t==='portrait-primary'||t==='portrait-secondary';
+    }
+    return window.innerHeight>window.innerWidth;
+  }
+
+  function checkOrientation(){
+    if(!_isTouch()){overlay.classList.remove('active');return;}
+    if(skipped){overlay.classList.remove('active');return;}
+    if(isPortrait()){
+      overlay.classList.add('active');
+    }else{
+      overlay.classList.remove('active');
+      skipped=false; // 가로로 돌리면 스킵 상태 리셋 → 다시 세로로 돌면 재안내
+    }
+  }
+
+  skipBtn.addEventListener('click',function(){
+    skipped=true;
+    overlay.classList.remove('active');
+  });
+
+  // orientation 변경 감지 (두 가지 방법 병행 — Safari 호환)
+  if(window.screen&&window.screen.orientation){
+    window.screen.orientation.addEventListener('change',function(){
+      setTimeout(checkOrientation,100); // 회전 애니메이션 후 체크
+    });
+  }
+  window.addEventListener('orientationchange',function(){
+    setTimeout(checkOrientation,150);
+  });
+  window.addEventListener('resize',function(){
+    setTimeout(checkOrientation,100);
+  });
+
+  // 초기 체크
+  setTimeout(checkOrientation,0);
+})();
 
 // ═══════════════════════════════════════════
 // 초기화
