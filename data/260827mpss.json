@@ -2,27 +2,27 @@
   "title": "마포구 성산동 165-72번지 일대 가로주택정비사업",
   "date": "2026-06-24",
   "memo": "※ 위 일정은 인허가 과정 및 조합의 일정에 따라 변경될 수 있습니다.",
-  "zoom": 37,
-  "rowHeight": 38,
-  "barPad": 9,
+  "zoom": 28,
+  "rowHeight": 48,
+  "barPad": 14,
   "legendItems": [],
   "milestones": [
     {
       "id": "ms1",
       "name": "사업시행인가 접수",
-      "date": "2026-09-13",
+      "date": "2027-01-03",
       "color": "#DD2222"
     },
     {
       "id": "ms2",
       "name": "사업시행인가 완료",
-      "date": "2027-01-03",
+      "date": "2027-04-25",
       "color": "#CC6600"
     },
     {
       "id": "ms3",
       "name": "착공",
-      "date": "2027-03-28",
+      "date": "2027-07-18",
       "color": "#226622"
     },
     {
@@ -33,8 +33,14 @@
     },
     {
       "id": "ms1782269616727",
-      "name": "보정계수 심의완료",
-      "date": "2026-06-21",
+      "name": "통합심의변경 심의완료",
+      "date": "2026-10-25",
+      "color": "#dd2222"
+    },
+    {
+      "id": "ms1787787449214",
+      "name": "총회",
+      "date": "2026-09-05",
       "color": "#DD2222"
     }
   ],
@@ -65,7 +71,7 @@
         },
         {
           "name": "조합일정",
-          "dur": 30,
+          "dur": 46,
           "color": "green",
           "pattern": "dots",
           "textColor": "#ffffff"
@@ -100,22 +106,8 @@
         },
         {
           "name": "사업보정계수 적용 통합심의",
-          "dur": 8,
+          "dur": 26,
           "color": "purple",
-          "textColor": "#ffffff"
-        },
-        {
-          "name": "관리계획(변경)",
-          "dur": 4,
-          "color": "purple",
-          "pattern": "vline",
-          "textColor": "#ffffff"
-        },
-        {
-          "name": "소규모주택정비 통합심의",
-          "dur": 4,
-          "color": "purple",
-          "pattern": "dots",
           "textColor": "#ffffff"
         }
       ]
@@ -134,7 +126,7 @@
       "phases": [
         {
           "name": "사업시행인가 도서 작성",
-          "dur": 22,
+          "dur": 38,
           "color": "orange",
           "pattern": "vline",
           "textColor": "#ffffff"
@@ -183,11 +175,13 @@
           "dur": 4,
           "color": "yellow",
           "textColor": "#ffffff",
-          "pattern": "dots"
+          "pattern": "dots",
+          "msref": "ms1",
+          "msoffset": -4
         },
         {
           "name": "지하안전영향평가 완료대기",
-          "dur": 14,
+          "dur": 12,
           "color": "gray",
           "pattern": "vline",
           "textColor": "#ffffff"
@@ -230,7 +224,9 @@
           "dur": 4,
           "color": "yellow",
           "textColor": "#ffffff",
-          "pattern": "dots"
+          "pattern": "dots",
+          "msref": "ms1",
+          "msoffset": -4
         },
         {
           "name": "검토/보완/행정처리",
@@ -255,7 +251,7 @@
       "offset": 0,
       "dep": "g9",
       "msref": "ms1",
-      "abs": 83,
+      "abs": 99,
       "emph": "none",
       "emphColor": "#ff8c00",
       "phases": [
@@ -271,7 +267,9 @@
           "dur": 7,
           "color": "gray",
           "textColor": "#ffffff",
-          "pattern": "vline"
+          "pattern": "vline",
+          "msref": "ms1",
+          "msoffset": -1
         },
         {
           "name": "풍동실험 반영",
@@ -293,7 +291,7 @@
         },
         {
           "name": "구조심의 및 보완",
-          "dur": 8,
+          "dur": 6,
           "color": "teal",
           "textColor": "#ffffff",
           "pattern": "vline"
@@ -308,7 +306,7 @@
       "offset": -4,
       "dep": "",
       "msref": "ms1",
-      "abs": 83,
+      "abs": 99,
       "emph": "none",
       "emphColor": "#ff8c00",
       "phases": [
@@ -323,7 +321,9 @@
           "name": "풍동실험",
           "dur": 4,
           "color": "blue",
-          "textColor": "#ffffff"
+          "textColor": "#ffffff",
+          "msref": "ms1",
+          "msoffset": -1
         },
         {
           "name": "풍압실험/보고서",
@@ -341,7 +341,7 @@
       "offset": -2,
       "dep": "",
       "msref": "ms1",
-      "abs": 84,
+      "abs": 86,
       "emph": "none",
       "emphColor": "#ff8c00",
       "phases": [
@@ -356,7 +356,8 @@
           "name": "협의 및 보완",
           "dur": 4,
           "color": "green",
-          "textColor": "#ffffff"
+          "textColor": "#ffffff",
+          "msref": ""
         }
       ]
     },
@@ -368,7 +369,7 @@
       "offset": -20,
       "dep": "",
       "msref": "ms1",
-      "abs": 84,
+      "abs": 100,
       "emph": "none",
       "emphColor": "#ff8c00",
       "phases": [
@@ -383,7 +384,8 @@
           "name": "협의공문수신",
           "dur": 4,
           "color": "pink",
-          "textColor": "#ffffff"
+          "textColor": "#ffffff",
+          "msref": "ms1"
         },
         {
           "name": "기관협의",
@@ -394,7 +396,7 @@
         },
         {
           "name": "보완",
-          "dur": 6,
+          "dur": 5,
           "color": "pink",
           "pattern": "vline",
           "textColor": "#ffffff"
@@ -422,16 +424,18 @@
       "offset": -40,
       "dep": "",
       "msref": "ms1",
-      "abs": 99,
+      "abs": 116,
       "emph": "none",
       "emphColor": "#ff8c00",
       "phases": [
         {
           "name": "해체심의",
-          "dur": 14,
+          "dur": 12,
           "color": "orange",
           "textColor": "#ffffff",
-          "pattern": "diag"
+          "pattern": "diag",
+          "msref": "",
+          "msoffset": 0
         }
       ]
     },
@@ -455,7 +459,7 @@
       "phases": [
         {
           "name": "사업시행인가 도서",
-          "dur": 22,
+          "dur": 38,
           "color": "gray",
           "pattern": "diagR",
           "textColor": "#ffffff"
@@ -467,7 +471,7 @@
     {
       "id": "pt1778804223293",
       "label": "지하안전영향평가 완료",
-      "absWeek": 100,
+      "absWeek": 116,
       "gid": "g8",
       "pos": "above",
       "color": "#dd4444"
@@ -475,7 +479,7 @@
     {
       "id": "pt1778804421154",
       "label": "도서제출",
-      "absWeek": 106,
+      "absWeek": 120,
       "gid": "g7",
       "pos": "below",
       "color": "#dd4444"
@@ -483,7 +487,7 @@
     {
       "id": "pt1778804649660",
       "label": "굴토심의",
-      "absWeek": 112,
+      "absWeek": 126,
       "gid": "g7",
       "pos": "below",
       "color": "#dd4444"
@@ -491,7 +495,7 @@
     {
       "id": "pt1778804681920",
       "label": "굴토심의 완료",
-      "absWeek": 116,
+      "absWeek": 130,
       "gid": "g7",
       "pos": "below",
       "color": "#dd4444"
@@ -499,7 +503,7 @@
     {
       "id": "pt1778804921707",
       "label": "구조심의 접수",
-      "absWeek": 106,
+      "absWeek": 120,
       "gid": "g10",
       "pos": "above",
       "color": "#dd4444"
@@ -507,7 +511,7 @@
     {
       "id": "pt1778804988525",
       "label": "보고서 제출",
-      "absWeek": 88,
+      "absWeek": 90,
       "gid": "g11",
       "pos": "below",
       "color": "#dd4444"
@@ -515,7 +519,7 @@
     {
       "id": "pt1778805012033",
       "label": "완료",
-      "absWeek": 92,
+      "absWeek": 94,
       "gid": "g11",
       "pos": "below",
       "color": "#dd4444"
@@ -523,7 +527,7 @@
     {
       "id": "pt1778805497369",
       "label": "완료",
-      "absWeek": 114,
+      "absWeek": 128,
       "gid": "g10",
       "pos": "below",
       "color": "#dd4444"
@@ -531,9 +535,17 @@
     {
       "id": "pt1779233885661",
       "label": "완료",
-      "absWeek": 91,
+      "absWeek": 107,
       "gid": "g9",
       "pos": "below",
+      "color": "#dd4444"
+    },
+    {
+      "id": "pt1787787522537",
+      "label": "통합심의변경접수",
+      "absWeek": 88,
+      "gid": "g1779233542079",
+      "pos": "above",
       "color": "#dd4444"
     }
   ],
