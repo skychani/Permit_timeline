@@ -9,16 +9,20 @@
   --bg:#fff;--bg2:#f6f6f4;--bg3:#eeeeec;
   --bd:rgba(0,0,0,0.09);--bd2:rgba(0,0,0,0.17);
   --tx:#1a1a1a;--tx2:#666;--tx3:#aaa;
-  --acc:#3478f6;--acc-bg:#eaf2ff;--acc-tx:#1450c8;
-  --dan:#d93025;--dan-bg:#fdecea;--dan-tx:#b71c1c;
+  --acc:#2B2E33;--acc-bg:#EDEDEE;--acc-tx:#2B2E33;
+  --dan:#C4453A;--dan-bg:#FBEAE7;--dan-tx:#973127;
+  --exp:#8a8a8a;--exp-bg:rgba(0,0,0,0.05);
+  --ms:#6B4A3A;--ms-bg:rgba(107,74,58,0.08);
   --rad:8px;--rad-lg:12px;
 }
 @media(prefers-color-scheme:dark){:root{
   --bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;
   --bd:rgba(255,255,255,0.08);--bd2:rgba(255,255,255,0.15);
   --tx:#f0f0f0;--tx2:#aaa;--tx3:#666;
-  --acc:#5b9cf6;--acc-bg:#1a2a4a;--acc-tx:#90b8f8;
-  --dan:#f05050;--dan-bg:#3a1a1a;--dan-tx:#f08080;
+  --acc:#e8e8e8;--acc-bg:#2c2c2e;--acc-tx:#eee;
+  --dan:#E2685C;--dan-bg:#3a1a1a;--dan-tx:#f0a89e;
+  --exp:#9a9a9a;--exp-bg:rgba(255,255,255,0.07);
+  --ms:#B08370;--ms-bg:rgba(176,131,112,0.12);
 }}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
@@ -62,14 +66,20 @@ button#btn-lock.flash{animation:lock-flash .55s ease}
 #footer{background:var(--bg);border-top:0.5px solid var(--bd);padding:7px 14px;flex-shrink:0}
 #memo-wrap label{font-size:11px;color:var(--tx2);display:block;margin-bottom:3px}
 textarea#memo{width:100%;font-size:11px;font-family:inherit;padding:5px 8px;border-radius:var(--rad);border:0.5px solid var(--bd2);background:var(--bg2);color:var(--tx);resize:vertical;min-height:38px;max-height:80px}
-button{font-family:inherit;font-size:12px;padding:4px 10px;border-radius:var(--rad);border:0.5px solid var(--bd2);background:transparent;color:var(--tx2);cursor:pointer;transition:background .12s;white-space:nowrap}
+button{font-family:inherit;font-size:12px;padding:4px 10px;border-radius:var(--rad);border:0.5px solid var(--bd2);background:transparent;color:var(--tx2);cursor:pointer;transition:background .15s,border-color .15s,color .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;justify-content:center}
 button:hover{background:var(--bg2)}
 button.pri{background:var(--acc-bg);color:var(--acc-tx);border-color:transparent}
-button.ms-btn{border-color:#cc3333;color:#cc3333}
-button.ms-btn:hover{background:#fff0f0}
+button.ms-btn{border-color:var(--ms);color:var(--ms)}
+button.ms-btn:hover{background:var(--ms-bg)}
 button.danger{color:var(--dan-tx);border-color:transparent}
 button.danger:hover{background:var(--dan-bg)}
-button.pdf-btn{background:var(--dan-bg);color:var(--dan-tx);border-color:transparent}
+button.exp-btn{border-color:var(--exp);color:var(--exp)}
+button.exp-btn:hover{background:var(--exp-bg)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.emph-chip:focus-visible,.leg-edit-btn:focus-visible{
+  outline:2px solid var(--acc);outline-offset:1px;
+}
+.bi{flex-shrink:0}
+.tbgroup{display:flex;align-items:center;gap:3px;background:var(--bg2);border-radius:9px;padding:3px;flex-wrap:wrap}
 input[type=date],input[type=text],input[type=number],select{font-family:inherit;font-size:12px;padding:3px 7px;border-radius:var(--rad);border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx);outline:none}
 input[type=range]{width:68px;accent-color:var(--acc)}
 .vsep{width:0.5px;height:18px;background:var(--bd2);flex-shrink:0}
@@ -85,7 +95,8 @@ input[type=range]{width:68px;accent-color:var(--acc)}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.42);z-index:1000;align-items:flex-start;justify-content:center;padding-top:32px;overflow-y:auto}
 .modal-bg.open{display:flex}
 .modal{background:var(--bg);border:0.5px solid var(--bd2);border-radius:var(--rad-lg);padding:16px;width:580px;max-width:96vw;max-height:88vh;overflow-y:auto;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
-.modal h3{font-size:14px;font-weight:600;margin-bottom:11px}
+.modal h3{font-size:14px;font-weight:600;margin-bottom:11px;display:flex;align-items:center;gap:6px;padding-bottom:8px;border-bottom:0.5px solid var(--bd)}
+.modal h3 svg{flex-shrink:0;color:var(--tx2)}
 .mrow{display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-wrap:wrap}
 .mrow>label{font-size:11px;color:var(--tx2);min-width:88px;flex-shrink:0}
 .mrow input[type=number]{width:56px}
@@ -197,27 +208,32 @@ input[type=range]{width:68px;accent-color:var(--acc)}
 <div id="header">
   <!-- ── 주요 액션 줄 ── -->
   <div id="hdr-top">
-    <button id="btn-undo" onclick="doUndo()" title="실행 취소 (Ctrl+Z)" style="font-size:13px;padding:4px 8px" disabled>↩</button>
-    <button id="btn-redo" onclick="doRedo()" title="다시 실행 (Ctrl+Y)" style="font-size:13px;padding:4px 8px" disabled>↪</button>
-    <div class="vsep"></div>
-    <button id="btn-lock" onclick="toggleLock()" title="편집 잠금/해제">🔓 편집</button>
-    <div class="vsep"></div>
-    <button class="pri" onclick="openAddGroup()">＋ 항목</button>
-    <button onclick="openAddSep()">— 구분선</button>
-    <button class="ms-btn" onclick="openMsModal()">🚩 마일스톤</button>
-    <button onclick="openAddPointer()">▲ 포인터</button>
-    <div class="vsep"></div>
-    <button onclick="openPeriodModal()" title="명절·공백 기간 표시">📅 기간 블록</button>
-    <button onclick="openSummaryPanel()" title="일정 요약 및 D-day">📊 요약</button>
-    <div class="vsep"></div>
-    <button onclick="doExport()">💾 저장</button>
-    <button onclick="doImport()">📂 불러오기</button>
-    <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImport(event)">
-    <div class="vsep"></div>
-    <button onclick="previewPDF()" style="border-color:#CC3333;color:#CC3333">🔍 미리보기</button>
-    <button class="pdf-btn" onclick="exportPDF()">📄 PDF</button>
-    <div class="vsep"></div>
-    <button id="btn-settings" onclick="toggleSettings()" title="보기 설정 및 제목">⚙️ 설정</button>
+    <div class="tbgroup">
+      <button id="btn-undo" onclick="doUndo()" title="실행 취소 (Ctrl+Z)" aria-label="실행 취소" style="padding:5px 7px" disabled><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg></button>
+      <button id="btn-redo" onclick="doRedo()" title="다시 실행 (Ctrl+Y)" aria-label="다시 실행" style="padding:5px 7px" disabled><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"></polyline><path d="M4 20v-7a4 4 0 0 1 4-4h12"></path></svg></button>
+    </div>
+    <button id="btn-lock" onclick="toggleLock()" title="편집 잠금/해제"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg> 편집</button>
+    <button onclick="openPresetModal()" title="자주 쓰는 일정 구조를 저장하고, 새 시작일로 불러오기"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg> 프리셋</button>
+    <div class="tbgroup">
+      <button class="pri" onclick="openAddGroup()"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> 항목</button>
+      <button onclick="openAddSep()"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg> 구분선</button>
+      <button class="ms-btn" onclick="openMsModal()"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg> 마일스톤</button>
+      <button onclick="openAddPointer()"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L3 20h18L12 3z"></path></svg> 포인터</button>
+    </div>
+    <div class="tbgroup">
+      <button onclick="openPeriodModal()" title="명절·공백 기간 표시"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> 기간 블록</button>
+      <button onclick="openSummaryPanel()" title="일정 요약 및 D-day"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> 요약</button>
+    </div>
+    <div class="tbgroup">
+      <button class="exp-btn" onclick="doExport()"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> 저장</button>
+      <button class="exp-btn" onclick="doImport()"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg> 불러오기</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImport(event)">
+      <button class="exp-btn" onclick="previewPDF()"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> 미리보기</button>
+      <button class="exp-btn" onclick="exportPDF()"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg> PDF</button>
+      <button class="exp-btn" onclick="exportPNG()" title="간트 차트를 PNG 이미지로 저장"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg> PNG</button>
+      <button class="exp-btn" onclick="exportExcel()" title="간트 차트 모양 그대로 엑셀로 저장"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> Excel</button>
+    </div>
+    <button id="btn-settings" onclick="toggleSettings()" title="보기 설정 및 제목"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> 설정</button>
   </div>
   <!-- ── 설정 줄 (토글) ── -->
   <div id="hdr-settings">
@@ -247,8 +263,8 @@ input[type=range]{width:68px;accent-color:var(--acc)}
       <span id="bp-lbl">5px</span>
     </div>
     <div class="vsep"></div>
-    <button onclick="openLegModal()">🎨 범례 편집</button>
-    <button onclick="resetToDefault()" style="font-size:11px;padding:4px 8px;color:var(--tx3)">↺ 초기화</button>
+    <button onclick="openLegModal()"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".6" fill="currentColor" stroke="none"></circle><circle cx="17.5" cy="10.5" r=".6" fill="currentColor" stroke="none"></circle><circle cx="8.5" cy="7.5" r=".6" fill="currentColor" stroke="none"></circle><circle cx="6.5" cy="12.5" r=".6" fill="currentColor" stroke="none"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg> 범례 편집</button>
+    <button onclick="resetToDefault()" style="font-size:11px;padding:4px 8px;color:var(--tx3)"><svg class="bi" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg> 초기화</button>
   </div>
 </div>
 
@@ -287,7 +303,7 @@ input[type=range]{width:68px;accent-color:var(--acc)}
 <!-- 기간 블록 모달 -->
 <div class="modal-bg" id="period-modal-bg" onclick="if(event.target===this)document.getElementById('period-modal-bg').classList.remove('open')">
 <div class="modal" style="width:540px">
-  <h3>📅 기간 블록 (명절·공백 기간)</h3>
+  <h3><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> 기간 블록 (명절·공백 기간)</h3>
   <p style="font-size:11px;color:var(--tx2);margin-bottom:9px">간트 차트에 색상 배경으로 표시할 기간을 추가합니다.</p>
   <div id="period-list"></div>
   <button onclick="addPeriodBlock()" style="margin-bottom:8px;font-size:11px">＋ 기간 추가</button>
@@ -309,7 +325,7 @@ input[type=range]{width:68px;accent-color:var(--acc)}
 <!-- 마일스톤 모달 -->
 <div class="modal-bg" id="ms-modal-bg" onclick="if(event.target===this)closeMsModal()">
 <div class="modal">
-  <h3>🚩 마일스톤 관리</h3>
+  <h3><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg> 마일스톤 관리</h3>
   <p style="font-size:11px;color:var(--tx2);margin-bottom:9px">세로 기준선 — 드래그로 이동 가능, 더블클릭으로 편집</p>
   <div class="ms-list" id="ms-list"></div>
   <button onclick="addMs()" style="margin-bottom:7px">＋ 추가</button>
@@ -320,7 +336,7 @@ input[type=range]{width:68px;accent-color:var(--acc)}
 <!-- 포인터 모달 -->
 <div class="modal-bg" id="ptr-modal-bg" onclick="if(event.target===this)closePtrModal()">
 <div class="modal" style="width:440px">
-  <h3 id="ptr-modal-title">▲ 포인터 추가</h3>
+  <h3><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L3 20h18L12 3z"></path></svg> <span id="ptr-modal-title">포인터 추가</span></h3>
   <div class="mrow"><label>레이블</label><input type="text" id="ptr-label" placeholder="예: 공람" style="flex:1"></div>
   <div class="mrow">
     <label>날짜</label>
@@ -350,10 +366,24 @@ input[type=range]{width:68px;accent-color:var(--acc)}
 </div>
 </div>
 
+<!-- 프리셋 모달 -->
+<div class="modal-bg" id="preset-modal-bg" onclick="if(event.target===this)closePresetModal()">
+<div class="modal" style="width:460px">
+  <h3><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg> 프리셋</h3>
+  <p style="font-size:11px;color:var(--tx2);margin-bottom:9px">자주 쓰는 일정 구조를 저장해두고, 새 프로젝트를 시작할 때 시작일만 입력하면 저장된 일정 전체가 그 날짜에 맞춰 자동으로 이동합니다.</p>
+  <div class="mrow">
+    <input type="text" id="preset-new-name" placeholder="예: 가로주택정비사업 표준" style="flex:1">
+    <button class="pri" onclick="saveCurrentAsPreset()">현재 일정표 저장</button>
+  </div>
+  <div class="ms-list" id="preset-list" style="margin-top:8px"></div>
+  <div class="mbtn-row"><button onclick="closePresetModal()">닫기</button></div>
+</div>
+</div>
+
 <!-- 범례 편집 모달 -->
 <div class="modal-bg" id="leg-modal-bg" onclick="if(event.target===this)closeLegModal()">
 <div class="modal">
-  <h3>🎨 범례 편집</h3>
+  <h3><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".6" fill="currentColor" stroke="none"></circle><circle cx="17.5" cy="10.5" r=".6" fill="currentColor" stroke="none"></circle><circle cx="8.5" cy="7.5" r=".6" fill="currentColor" stroke="none"></circle><circle cx="6.5" cy="12.5" r=".6" fill="currentColor" stroke="none"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg> 범례 편집</h3>
   <p style="font-size:11px;color:var(--tx2);margin-bottom:9px">색상과 이름을 자유롭게 지정합니다.</p>
   <div class="leg-list" id="leg-list"></div>
   <button onclick="addLegItem()" style="margin-bottom:7px">＋ 항목 추가</button>
@@ -548,21 +578,39 @@ const wd=w=>{let d=new Date(ORIGIN);d.setDate(d.getDate()+w*7);return d};
 const fym=d=>d.getFullYear()+'년 '+(d.getMonth()+1)+'월';
 const wlabel=w=>{const d=wd(w);return d.getFullYear()+'년 '+(d.getMonth()+1)+'월 ~'+Math.ceil(d.getDate()/7)+'주'};
 
-// 간트 4주 블록 기준 표시 레이블
-// absWeek 0 = 2025년 1월 1주, 4주 = 1개월 고정
+// 절대 주차 → 실제 달력 연/월/월내 주차
+// (각 칸의 "월"은 그 칸의 시작일(wd(w))이 속한 실제 달력 월을 따름 — 달마다 4주 또는 5주가 될 수 있음)
+function wToYMW(w){
+  const d=wd(w);
+  const yr=d.getFullYear(),mo=d.getMonth()+1;
+  let wk=1;
+  for(let k=1;k<=6;k++){
+    const p=wd(w-k);
+    if(p.getFullYear()===yr&&p.getMonth()+1===mo)wk++;
+    else break;
+  }
+  return{yr,mo,wk};
+}
+// 실제 달력 연/월 → 그 달의 첫 칸에 해당하는 절대 주차
+function _firstColOfMonth(yr,mo){
+  const w0=Math.floor((new Date(yr,mo-1,1)-ORIGIN)/(7*86400000));
+  for(let k=0;k<8;k++){
+    const d=wd(w0+k);
+    if(d.getFullYear()===yr&&d.getMonth()+1===mo)return w0+k;
+  }
+  return w0;
+}
+function ymwToW(yr,mo,wk){
+  return _firstColOfMonth(yr,mo)+(wk-1);
+}
+// 간트 표시 레이블 (실제 달력 기준)
 function ganttLabel(w){
-  // 절대 주차 → 연/월/주차 (4주 블록 기준)
-  const absMonIdx=Math.floor(w/4);       // 0=2025년1월
-  const wkInMon=(((w%4)+4)%4)+1;        // 1~4주
-  const yr=2025+Math.floor(absMonIdx/12);
-  const mo=((absMonIdx%12)+12)%12+1;    // 1~12월
-  return yr+'년 '+mo+'월 '+wkInMon+'주';
+  const{yr,mo,wk}=wToYMW(w);
+  return yr+'년 '+mo+'월 '+wk+'주';
 }
 // 간트 기준 날짜 문자열 (연/월만)
 function ganttMonthLabel(w){
-  const absMonIdx=Math.floor(w/4);
-  const yr=2025+Math.floor(absMonIdx/12);
-  const mo=((absMonIdx%12)+12)%12+1;
+  const{yr,mo}=wToYMW(w);
   return yr+'년 '+mo+'월';
 }
 let WW=15;
@@ -812,83 +860,68 @@ function renderToCtx(tc,tcanvas,forPrint=false){
     }
   }
 
-  // ── 연도 헤더 ──
+  // ── 연도 헤더 (실제 달력 연도 경계 기준) ──
   const yrColors=forPrint?['#dde0ec','#e8ebf5']:
     matchMedia('(prefers-color-scheme:dark)').matches?['#202028','#252530']:['#dde0ec','#e8ebf5'];
-  for(let yi=0;yi<5;yi++){
-    const yr=2025+yi;
-    const yrStart=yi*48;      // 4주×12월 = 48주/년
-    const yrEnd=(yi+1)*48;
-    const x1=Math.max(LABEL_W,wx(yrStart));
-    const x2=Math.min(logicW,wx(yrEnd));
+  const yrBlocks=[];
+  {
+    let curYr=null,blockStart=minW;
+    for(let w=minW;w<=maxW;w++){
+      const yr=wd(w).getFullYear();
+      if(curYr===null){curYr=yr;blockStart=w;}
+      else if(yr!==curYr){yrBlocks.push({yr:curYr,wStart:blockStart,wEnd:w});curYr=yr;blockStart=w;}
+    }
+    if(curYr!==null)yrBlocks.push({yr:curYr,wStart:blockStart,wEnd:maxW+1});
+  }
+  yrBlocks.forEach((blk,yi)=>{
+    const x1=Math.max(LABEL_W,wx(blk.wStart));
+    const x2=Math.min(logicW,wx(blk.wEnd));
     if(x2>x1){
       tc.fillStyle=yrColors[yi%2];tc.fillRect(x1,yYear,x2-x1,H_YEAR);
       tc.fillStyle=forPrint?'#1a1a3a':co.txt;tc.font='600 11px sans-serif';tc.textAlign='center';
-      tc.fillText(yr+'년',x1+(x2-x1)/2,yYear+H_YEAR-4);
+      tc.fillText(blk.yr+'년',x1+(x2-x1)/2,yYear+H_YEAR-4);
     }
-  }
+  });
 
-  // ── 월/주차 헤더 — 각 월 정확히 4칸 고정 ──
-  // ORIGIN(2025-01-06)이 1월 1주 → minW 기준으로 연/월을 역산
+  // ── 월/주차 헤더 (실제 달력 월 경계 기준 — 달마다 4~5칸) ──
   const monColors=forPrint?['#eef0f8','#f5f6fb']:
     matchMedia('(prefers-color-scheme:dark)').matches?['#1e1e26','#202028']:['#eef0f8','#f5f6fb'];
-  // minW에 해당하는 연/월 계산
+  const moBlocks=[];
   {
-    // 전체 주차를 4주 단위 월 블록으로 처리
-    // 2025-01-06 = 주0, 4주마다 한 달
-    // 절대 월 인덱스: Math.floor(absWeek/4), 월 내 주: absWeek%4
-    const absMinW=minW; // 음수 가능
-    // 첫 월 블록의 시작 주 (4의 배수로 내림)
-    const firstMonStart=Math.floor(absMinW/4)*4;
-    let mi=0;
-    for(let monStart=firstMonStart; monStart<maxW+4; monStart+=4){
-      // 이 월 블록의 연/월 계산
-      const absMonIdx=Math.floor(monStart/4); // 0=2025년1월
-      const totalMonth=absMonIdx; // 0부터
-      const yr=2025+Math.floor(totalMonth/12);
-      const mo=((totalMonth%12)+12)%12; // 0~11
-      const ws2=monStart, we2=monStart+4;
-      const mx=wx(ws2), mw=4*WW;
-      // 월 배경
-      tc.fillStyle=monColors[mi%2];tc.fillRect(mx,yMon,mw,H_MON);
-      if(mw>12){
-        tc.fillStyle=forPrint?'#444':co.sub;tc.font='500 9px sans-serif';tc.textAlign='center';
-        tc.fillText((mo+1)+'월',mx+mw/2,yMon+H_MON-3);
-      }
-      // 주차 셀 1~4 고정
-      for(let wk=0;wk<4;wk++){
-        const w=ws2+wk;
-        const wx2=wx(w);
-        tc.fillStyle=wk%2===0?(forPrint?'#f2f3f9':co.hdrWkA):(forPrint?'#fafbff':co.hdrWkB);
-        tc.fillRect(wx2,yWk,WW,H_WK);
-        if(WW>=10){
-          tc.fillStyle=forPrint?'#777':co.sub;tc.font='7px sans-serif';tc.textAlign='center';
-          tc.fillText(wk+1,wx2+WW/2,yWk+H_WK-2);
-        }
-      }
-      mi++;
+    let curYr=null,curMo=null,blockStart=minW;
+    for(let w=minW;w<=maxW;w++){
+      const d=wd(w);
+      const yr=d.getFullYear(),mo=d.getMonth();
+      if(curYr===null){curYr=yr;curMo=mo;blockStart=w;}
+      else if(yr!==curYr||mo!==curMo){moBlocks.push({yr:curYr,mo:curMo,wStart:blockStart,wEnd:w});curYr=yr;curMo=mo;blockStart=w;}
     }
+    if(curYr!==null)moBlocks.push({yr:curYr,mo:curMo,wStart:blockStart,wEnd:maxW+1});
   }
+  moBlocks.forEach((blk,mi)=>{
+    const mx=wx(blk.wStart),mw=wx(blk.wEnd)-wx(blk.wStart);
+    tc.fillStyle=monColors[mi%2];tc.fillRect(mx,yMon,mw,H_MON);
+    if(mw>12){
+      tc.fillStyle=forPrint?'#444':co.sub;tc.font='500 9px sans-serif';tc.textAlign='center';
+      tc.fillText((blk.mo+1)+'월',mx+mw/2,yMon+H_MON-3);
+    }
+    for(let w=blk.wStart;w<blk.wEnd;w++){
+      const wk=w-blk.wStart;
+      const wx2=wx(w);
+      tc.fillStyle=wk%2===0?(forPrint?'#f2f3f9':co.hdrWkA):(forPrint?'#fafbff':co.hdrWkB);
+      tc.fillRect(wx2,yWk,WW,H_WK);
+      if(WW>=10){
+        tc.fillStyle=forPrint?'#777':co.sub;tc.font='7px sans-serif';tc.textAlign='center';
+        tc.fillText(wk+1,wx2+WW/2,yWk+H_WK-2);
+      }
+    }
+  });
 
-  // ── 세로선 (위계: 연>월>주) — 중복 없이 한 번만 그림 ──
-  // 연도 경계: 각 연도 1월 1일에 해당하는 정확한 주 시작점
-  const yearBoundWeeks=new Set();
-  for(let yi=0;yi<5;yi++){
-    // 4주×12월=48주 단위로 연도 경계 계산 (ORIGIN=2025-01-06 기준)
-    yearBoundWeeks.add(yi*48);
-  }
-  // 월 경계: 각 월 1일에 해당하는 주 시작점 (연도 경계 제외)
-  const monBoundWeeks=new Set();
-  {
-    const firstMonStart=Math.floor(minW/4)*4;
-    for(let ms2=firstMonStart;ms2<=maxW+4;ms2+=4){
-      if(!yearBoundWeeks.has(ms2))monBoundWeeks.add(ms2);
-    }
-  }
+  // ── 세로선 (위계: 연>월>주) — 실제 달력상 연/월이 바뀌는 칸에만 굵은 선 ──
   for(let w=minW;w<=maxW;w++){
     const x=wx(w);
-    const isYear=yearBoundWeeks.has(w);
-    const isMon=monBoundWeeks.has(w);
+    const cur=wd(w),prev=wd(w-1);
+    const isYear=cur.getFullYear()!==prev.getFullYear();
+    const isMon=!isYear&&cur.getMonth()!==prev.getMonth();
     if(isYear){
       tc.strokeStyle=forPrint?'rgba(0,0,0,0.45)':co.bdYear;
       tc.lineWidth=forPrint?2:1.5;
@@ -939,8 +972,11 @@ function renderToCtx(tc,tcanvas,forPrint=false){
         tc.font='bold 9px sans-serif';tc.textAlign='center';
         const midX=x1+(x2-x1)/2;
         const tw2=tc.measureText(pb.label).width+10;
+        tc.save();
+        if(!forPrint){tc.shadowColor='rgba(0,0,0,0.2)';tc.shadowBlur=2.5;tc.shadowOffsetY=1;}
         tc.fillStyle=col+'ee';
         rrFill(tc,midX-tw2/2,HDR_H+2,tw2,14,3);
+        tc.restore();
         tc.fillStyle='rgba(60,40,0,0.85)';
         tc.fillText(pb.label,midX,HDR_H+12);
       }
@@ -1057,7 +1093,17 @@ function renderToCtx(tc,tcanvas,forPrint=false){
             const isF=bx>=LABEL_W,isL=bx+bw<=logicW;
             const patKey=ph.pattern||'solid';
             const patFill=patKey==='solid'?C2.bar:makePattern(tc,C2.bar,patKey,scale);
-            tc.fillStyle=isDragTarget?(C2.bar+'bb'):(patFill||C2.bar);
+            let barFill;
+            if(isDragTarget){barFill=C2.bar+'bb';}
+            else if(patKey==='solid'){
+              const grad=tc.createLinearGradient(0,by,0,by+bh);
+              grad.addColorStop(0,lightenHex(C2.bar,0.22));
+              grad.addColorStop(1,C2.bar);
+              barFill=grad;
+            } else {barFill=patFill||C2.bar;}
+            tc.save();
+            if(!forPrint){tc.shadowColor='rgba(0,0,0,0.22)';tc.shadowBlur=3;tc.shadowOffsetY=1.5;}
+            tc.fillStyle=barFill;
             tc.beginPath();
             tc.moveTo(rx+(isF?r:0),by);tc.lineTo(rx+rw-(isL?r:0),by);
             if(isL)tc.arcTo(rx+rw,by,rx+rw,by+r,r);
@@ -1068,6 +1114,7 @@ function renderToCtx(tc,tcanvas,forPrint=false){
             tc.lineTo(rx,by+(isF?r:0));
             if(isF)tc.arcTo(rx,by,rx+r,by,r);
             tc.closePath();tc.fill();
+            tc.restore();
 
             // 단계 구분선
             if(pi>0&&bx>LABEL_W){
@@ -1120,8 +1167,13 @@ function renderToCtx(tc,tcanvas,forPrint=false){
     tc.beginPath();tc.moveTo(x,0);tc.lineTo(x,logicH);tc.stroke();tc.setLineDash([]);
     tc.font='bold 9px sans-serif';tc.textAlign='center';
     const tw=tc.measureText(ms.name).width+12;
+    tc.save();
+    if(!forPrint){tc.shadowColor='rgba(0,0,0,0.28)';tc.shadowBlur=3;tc.shadowOffsetY=1.5;}
     tc.fillStyle=ms.color||'#DD2222';
     rrFill(tc,x-tw/2,2,tw,16,3);
+    // 깃발 꼬리 — 배지 아래쪽에서 기준선을 가리키는 작은 삼각형
+    tc.beginPath();tc.moveTo(x-4,17);tc.lineTo(x+4,17);tc.lineTo(x,21);tc.closePath();tc.fill();
+    tc.restore();
     tc.fillStyle='#fff';tc.fillText(ms.name,x,13);
     // hitArea는 년도 헤더 행(yYear~HDR_H)으로만 제한 → 바 영역 간섭 없음
     if(!forPrint)hitAreas.push({type:'milestone',id:ms.id,x1:x-tw/2-4,x2:x+tw/2+4,y1:0,y2:HDR_H});
@@ -1178,8 +1230,11 @@ function renderToCtx(tc,tcanvas,forPrint=false){
         badgeY=markerY+ts+2;
         if(badgeY+badgeH2>logicH-2) badgeY=markerY-badgeH2-ts-2; // 하단 초과시 위로
       }
+      tc.save();
+      if(!forPrint){tc.shadowColor='rgba(0,0,0,0.25)';tc.shadowBlur=3;tc.shadowOffsetY=1.5;}
       tc.fillStyle=col;
       rrFill(tc,badgeX,badgeY,tw2,badgeH2,3);
+      tc.restore();
       tc.fillStyle='#fff';
       tc.fillText(lbl,badgeX+tw2/2,badgeY+badgeH2-3);
     }
@@ -1192,6 +1247,30 @@ function renderToCtx(tc,tcanvas,forPrint=false){
     if(!forPrint)hitAreas.push({type:'pointer',pid:pt.id,x1:x-ts-2,x2:x+ts+2,
       y1:isAbove?markerY-14:markerY-ts,y2:isAbove?markerY+ts:markerY+14});
   });
+
+  // ── 오늘 날짜 표시선 ──
+  {
+    const _today=new Date();_today.setHours(0,0,0,0);
+    const todayW=dw(_today);
+    if(todayW>=minW-1&&todayW<=maxW+1){
+      const x=wx(todayW);
+      const tc2=forPrint?'rgba(30,140,60,0.9)':'#1e8c3c';
+      tc.strokeStyle=tc2;tc.lineWidth=forPrint?1.4:2;
+      tc.beginPath();tc.moveTo(x,HDR_H);tc.lineTo(x,logicH);tc.stroke();
+      tc.font='bold 9px sans-serif';tc.textAlign='center';
+      const lbl='오늘';
+      const tw4=tc.measureText(lbl).width+10;
+      let bx4=x-tw4/2;
+      bx4=Math.max(LABEL_W+2,Math.min(bx4,logicW-tw4-2));
+      tc.save();
+      if(!forPrint){tc.shadowColor='rgba(0,0,0,0.25)';tc.shadowBlur=2.5;tc.shadowOffsetY=1;}
+      tc.fillStyle=tc2;
+      rrFill(tc,bx4,logicH-16,tw4,14,3);
+      tc.restore();
+      tc.fillStyle='#fff';
+      tc.fillText(lbl,bx4+tw4/2,logicH-5);
+    }
+  }
 
   tc.setTransform(1,0,0,1,0,0);
 }
@@ -1207,6 +1286,7 @@ function render(withHistory){
   if(withHistory!==false){
     try{_pushHistory();}catch(e){}
   }
+  scheduleAutosave();
 }
 
 // ═══════════════════════════════════════════
@@ -1569,7 +1649,7 @@ function openAddPointer(){
   document.getElementById('ptr-color').value='#DD4444';
   populatePtrGid('');
   document.getElementById('ptr-del-btn').style.display='none';
-  document.getElementById('ptr-modal-title').textContent='▲ 포인터 추가';
+  document.getElementById('ptr-modal-title').textContent='포인터 추가';
   document.getElementById('ptr-modal-bg').classList.add('open');
 }
 function openEditPointer(id){
@@ -1581,7 +1661,7 @@ function openEditPointer(id){
   document.getElementById('ptr-color').value=pt.color||'#DD4444';
   populatePtrGid(pt.gid||'');
   document.getElementById('ptr-del-btn').style.display='';
-  document.getElementById('ptr-modal-title').textContent='▲ 포인터 편집';
+  document.getElementById('ptr-modal-title').textContent='포인터 편집';
   document.getElementById('ptr-modal-bg').classList.add('open');
 }
 function savePtrModal(){
@@ -1767,6 +1847,7 @@ function resetToDefault(){
   if(!confirm('기본 데이터로 초기화하시겠습니까?\n저장되지 않은 변경사항은 사라집니다.'))return;
   setData(_DEFAULT_DATA);
   lastSavedFilename='인허가일정.json';
+  clearAutosave();
 }
 
 function saveAsJson(filename){
@@ -1832,6 +1913,44 @@ function handleImport(e){
 // ═══════════════════════════════════════════
 // PDF 출력 + 자동 JSON 저장
 // ═══════════════════════════════════════════
+// 미리보기 — JSON 자동저장이나 인쇄창 없이 결과물만 새 탭에서 확인
+function previewPDF(){
+  const title=document.getElementById('meta-title').value;
+  const dt=document.getElementById('meta-date').value;
+  const memo=document.getElementById('memo').value;
+  const pc=document.createElement('canvas');
+  const pctx=pc.getContext('2d');
+  renderToCtx(pctx,pc,true);
+  const dataURL=pc.toDataURL('image/png',1.0);
+  const win=window.open('','_blank');
+  if(!win){alert('팝업 차단됨 — 허용 후 다시 시도');return}
+  win.document.write(`<!DOCTYPE html><html lang="ko"><head>
+  <meta charset="UTF-8"><title>${title} — 미리보기</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Malgun Gothic',sans-serif;background:#e8e8e8;color:#111;padding:20px}
+    .hint{position:fixed;top:10px;right:10px;font-size:11px;color:#666;background:#fff;padding:6px 10px;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,0.15)}
+    .sheet{background:#fff;padding:16px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.12);max-width:1400px;margin:0 auto}
+    .hdr{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:5px;border-bottom:1.5px solid #aaa;margin-bottom:6px}
+    .hdr-title{font-size:15px;font-weight:700;color:#1a1a2e;letter-spacing:-0.3px}
+    .hdr-meta{font-size:10px;color:#888;text-align:right;line-height:1.6}
+    .chart{width:100%;text-align:center;overflow-x:auto}
+    .chart img{max-width:100%;height:auto;display:block;margin:0 auto}
+    .memo-box{margin-top:6px;font-size:9px;color:#555;border-top:0.5px solid #ddd;padding-top:4px;line-height:1.7}
+  </style></head><body>
+    <div class="hint">🔍 미리보기 — 실제 파일 저장/인쇄는 이 창을 닫고 PDF 버튼을 사용하세요</div>
+    <div class="sheet">
+      <div class="hdr">
+        <div class="hdr-title">${title}</div>
+        <div class="hdr-meta">${dt||''}</div>
+      </div>
+      <div class="chart"><img src="${dataURL}"></div>
+      ${memo?`<div class="memo-box">${memo.replace(/\n/g,'<br>')}</div>`:''}
+    </div>
+  </body></html>`);
+  win.document.close();
+}
+
 function exportPDF(){
   // 1) JSON 자동 저장
   doExport();
@@ -1876,6 +1995,112 @@ function exportPDF(){
 }
 
 // ═══════════════════════════════════════════
+// PNG 이미지 내보내기
+// ═══════════════════════════════════════════
+function exportPNG(){
+  const pc=document.createElement('canvas');
+  const pctx=pc.getContext('2d');
+  renderToCtx(pctx,pc,true); // 인쇄용 고해상도 렌더 재사용
+  const dataURL=pc.toDataURL('image/png',1.0);
+  const title=(document.getElementById('meta-title').value||'간트차트').trim();
+  const a=document.createElement('a');
+  a.href=dataURL;
+  a.download=title+'.png';
+  a.click();
+}
+
+// ═══════════════════════════════════════════
+// CSV(엑셀) 내보내기 — 항목/단계별 일정 표
+// ═══════════════════════════════════════════
+// 간트 모양 그대로 살린 엑셀(.xls) 내보내기 — 주차별 셀에 단계 색상을 그대로 입힌 표
+// 실제 달력 연/월 경계로 [minW,maxW) 구간을 병합 블록으로 나눔 (헤더 colspan용)
+function _calBlocks(minW,maxW,keyFn){
+  const blocks=[];let curKey=null,blockStart=minW,meta=null;
+  for(let w=minW;w<maxW;w++){
+    const k=keyFn(w);
+    if(curKey===null){curKey=k.key;blockStart=w;meta=k;}
+    else if(k.key!==curKey){blocks.push({...meta,wStart:blockStart,wEnd:w});curKey=k.key;blockStart=w;meta=k;}
+  }
+  if(curKey!==null)blocks.push({...meta,wStart:blockStart,wEnd:maxW});
+  return blocks;
+}
+function exportExcel(){
+  const gs=rows.filter(r=>r.type==='group');
+  if(!gs.length){alert('내보낼 항목이 없습니다');return;}
+  const allS=gs.map(g=>groupStart(g));
+  const allE=gs.map((g,i)=>allS[i]+g.phases.reduce((s,p)=>s+p.dur,0));
+  const minW=Math.min(...allS);
+  const maxW=Math.max(...allE);
+  const totalCols=Math.max(1,maxW-minW);
+  const WCOL=26; // 주 칸 고정 너비(px) — 모든 주가 동일 폭을 갖도록 colgroup으로 강제
+  const ROWH=22; // 모든 행 높이 통일(px)
+  const CA='align="center" valign="middle" style="text-align:center;vertical-align:middle';
+
+  const yrBlocks=_calBlocks(minW,maxW,w=>({key:wd(w).getFullYear(),yr:wd(w).getFullYear()}));
+  const moBlocks=_calBlocks(minW,maxW,w=>{const d=wd(w);return{key:d.getFullYear()+'-'+d.getMonth(),mo:d.getMonth()};});
+
+  let html='<table border="1" cellspacing="0" cellpadding="3" style="border-collapse:collapse;font-family:맑은 고딕,sans-serif;font-size:11px;table-layout:fixed">';
+  html+='<colgroup><col width="120">';
+  for(let i=0;i<totalCols;i++)html+=`<col width="${WCOL}">`;
+  html+='</colgroup>';
+
+  // 연도 행
+  html+=`<tr height="${ROWH}"><th rowspan="3" ${CA};background:#eee">항목</th>`;
+  yrBlocks.forEach(b=>{html+=`<th colspan="${b.wEnd-b.wStart}" ${CA};background:#dde0ec;font-size:10px">${b.yr}년</th>`;});
+  html+=`</tr><tr height="${ROWH}">`;
+  // 월 행
+  moBlocks.forEach(b=>{html+=`<th colspan="${b.wEnd-b.wStart}" ${CA};background:#eef0f8;font-size:9px;font-weight:400">${b.mo+1}월</th>`;});
+  html+=`</tr><tr height="${ROWH}">`;
+  // 주차 행 (실제 달력 기준 — wToYMW 재사용)
+  for(let w=minW;w<maxW;w++){
+    const{wk}=wToYMW(w);
+    html+=`<th ${CA};background:#f5f6fa;font-size:8px;font-weight:400">${wk}주</th>`;
+  }
+  html+='</tr>';
+
+  rows.forEach(row=>{
+    if(row.type==='sep'){
+      html+=`<tr height="${ROWH}"><td ${CA};background:#f5f5f5;font-weight:600;color:${row.color||'#888'}">${row.label||''}</td><td colspan="${totalCols}" style="background:#f5f5f5"></td></tr>`;
+      return;
+    }
+    const g=row;
+    const gStart=groupStart(g);
+    const phaseStarts=[];
+    let _ps=gStart;
+    g.phases.forEach(ph=>{
+      if(ph.msref){
+        const _ms=milestones.find(m=>m.id===ph.msref);
+        if(_ms){const s=msWeek(_ms)+(ph.msoffset||0);phaseStarts.push(s);_ps=s+ph.dur;return;}
+      }
+      phaseStarts.push(_ps);_ps+=ph.dur;
+    });
+    html+=`<tr height="${ROWH}"><td ${CA};font-weight:600">${g.name}</td>`;
+    let cursor=minW;
+    g.phases.forEach((ph,pi)=>{
+      const s=phaseStarts[pi],e=s+ph.dur;
+      const spacer=Math.max(0,s-cursor);
+      if(spacer>0)html+=`<td colspan="${spacer}"></td>`;
+      const C2=PC[ph.color]||PC.blue;
+      const txColor=ph.textColor&&ph.textColor!=='auto'?ph.textColor:C2.text;
+      html+=`<td colspan="${Math.max(1,ph.dur)}" ${CA};background:${C2.bar};color:${txColor};font-weight:600">${ph.name}</td>`;
+      cursor=Math.max(cursor,e);
+    });
+    const tail=Math.max(0,maxW-cursor);
+    if(tail>0)html+=`<td colspan="${tail}"></td>`;
+    html+='</tr>';
+  });
+  html+='</table>';
+
+  const title=(document.getElementById('meta-title').value||'인허가일정').trim();
+  const doc=`<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body>${html}</body></html>`;
+  const blob=new Blob(['﻿'+doc],{type:'application/vnd.ms-excel'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=title+'.xls';
+  a.click();
+}
+
+// ═══════════════════════════════════════════
 // Undo / Redo
 // ═══════════════════════════════════════════
 const HISTORY_MAX=50;
@@ -1886,7 +2111,7 @@ let _historyPaused=false;
 function _snapshot(){
   // 현재 상태 직렬화
   return JSON.stringify({
-    rows:rows,milestones:milestones,pointers:pointers,legendItems:legendItems,
+    rows:rows,milestones:milestones,pointers:pointers,legendItems:legendItems,periodBlocks:periodBlocks,
     title:document.getElementById('meta-title').value,
     memo:document.getElementById('memo').value,
   });
@@ -1907,10 +2132,13 @@ function _restoreSnapshot(snap){
   _historyPaused=true;
   const d=JSON.parse(snap);
   rows=d.rows;milestones=d.milestones;pointers=d.pointers;legendItems=d.legendItems;
+  periodBlocks=d.periodBlocks||[];
   document.getElementById('meta-title').value=d.title||'';
   document.getElementById('memo').value=d.memo||'';
   _historyPaused=false;
-  renderLegend();render();
+  // 복원은 새 상태가 아니라 기존 기록을 되짚는 것이므로 history를 다시 쌓지 않음
+  // (render()를 그대로 부르면 _pushHistory가 redo 스택을 잘라버리는 버그가 있었음)
+  renderLegend();render(false);
 }
 function _updateUndoBtn(){
   const u=document.getElementById('btn-undo');
@@ -1948,6 +2176,178 @@ function _lsSet(key,val){try{localStorage.setItem(key,val);return true;}catch(e)
 function _lsGet(key){try{return localStorage.getItem(key);}catch(e){return null;}}
 
 // ═══════════════════════════════════════════
+// 자동저장 (새로고침/실수 종료 대비 임시 복구용)
+// ═══════════════════════════════════════════
+let _autosaveTimer=null;
+function _projName(){return(new URLSearchParams(window.location.search)).get('project')||'project';}
+function scheduleAutosave(){
+  clearTimeout(_autosaveTimer);
+  _autosaveTimer=setTimeout(doAutosave,1200);
+}
+function doAutosave(){
+  try{
+    localStorage.setItem('_autosave_'+_projName(),JSON.stringify({data:getData(),ts:Date.now()}));
+    updateAutosaveBadge();
+  }catch(e){}
+}
+function updateAutosaveBadge(){
+  const el=document.getElementById('autosave-badge');
+  if(!el)return;
+  const now=new Date();
+  el.textContent='✓ 자동저장 '+now.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  el.style.display='inline';
+  el.style.fontSize='11px';
+  el.style.color='var(--tx3)';
+}
+function clearAutosave(){
+  try{localStorage.removeItem('_autosave_'+_projName());}catch(e){}
+}
+// 자동저장 복구 제안 배너 (native confirm() 대신 — 화면을 막지 않음)
+function _showAutosaveBanner(savedData,ts){
+  const old=document.getElementById('autosave-banner');if(old)old.remove();
+  const timeStr=new Date(ts).toLocaleString('ko-KR');
+  const bar=document.createElement('div');
+  bar.id='autosave-banner';
+  bar.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9500;background:#fff8e1;color:#7a5200;border-bottom:1px solid #f0c36d;padding:7px 14px;font-size:12px;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,0.1)';
+  const msg=document.createElement('span');
+  msg.textContent='💾 자동저장된 편집 내용이 있습니다 ('+timeStr+')';
+  const btnRestore=document.createElement('button');
+  btnRestore.textContent='복구';
+  btnRestore.style.cssText='font-size:12px;padding:3px 10px;border-radius:6px;border:0.5px solid #d4a017;background:#fff;color:#7a5200;cursor:pointer;font-weight:600';
+  const btnDismiss=document.createElement('button');
+  btnDismiss.textContent='무시';
+  btnDismiss.style.cssText='font-size:12px;padding:3px 10px;border-radius:6px;border:0.5px solid transparent;background:transparent;color:#7a5200;cursor:pointer';
+  btnRestore.onclick=()=>{
+    setData(savedData);
+    bar.remove();
+    showToast('자동저장 내용을 복구했습니다');
+  };
+  btnDismiss.onclick=()=>bar.remove();
+  bar.appendChild(msg);bar.appendChild(btnRestore);bar.appendChild(btnDismiss);
+  document.body.appendChild(bar);
+}
+
+// ═══════════════════════════════════════════
+// 프리셋 (자주 쓰는 일정 구조 저장 → 새 시작일로 자동 이동해서 재사용)
+// ═══════════════════════════════════════════
+function _getPresets(){
+  try{return JSON.parse(localStorage.getItem('_presets')||'[]');}catch(e){return [];}
+}
+function _savePresets(list){
+  try{localStorage.setItem('_presets',JSON.stringify(list));}catch(e){}
+}
+// 프리셋 저장 시점의 "기준 주차" — free 앵커 항목/마일스톤/포인터/기간블록 중 가장 이른 시점
+function _computePresetRefWeek(){
+  const cands=[
+    ...rows.filter(r=>r.type==='group'&&r.anchor==='free').map(g=>g.abs||0),
+    ...milestones.map(m=>dw(new Date(m.date+'T00:00:00'))),
+    ...pointers.map(p=>p.absWeek||0),
+    ...periodBlocks.map(pb=>pb.startWeek||0)
+  ];
+  return cands.length?Math.min(...cands):0;
+}
+// 프리셋의 모든 날짜류 필드를 deltaWeeks만큼 이동한 사본을 반환
+function _shiftPresetDates(data,deltaWeeks){
+  const rows2=JSON.parse(JSON.stringify(data.rows||[]));
+  rows2.forEach(r=>{
+    if(r.type==='group'&&r.anchor==='free')r.abs=(r.abs||0)+deltaWeeks;
+    // recv_end/dep_end는 마일스톤·선행항목 기준 상대값이라 그대로 따라감
+  });
+  const milestones2=(data.milestones||[]).map(m=>{
+    const w=dw(new Date(m.date+'T00:00:00'))+deltaWeeks;
+    return{...m,date:wd(w).toISOString().slice(0,10)};
+  });
+  const pointers2=(data.pointers||[]).map(p=>({...p,absWeek:(p.absWeek||0)+deltaWeeks}));
+  const periodBlocks2=(data.periodBlocks||[]).map(pb=>({...pb,
+    startWeek:(pb.startWeek||0)+deltaWeeks,endWeek:(pb.endWeek||0)+deltaWeeks}));
+  return{
+    rows:rows2,milestones:milestones2,pointers:pointers2,periodBlocks:periodBlocks2,
+    legendItems:JSON.parse(JSON.stringify(data.legendItems||[])),
+    zoom:data.zoom,rowHeight:data.rowHeight,barPad:data.barPad
+  };
+}
+function saveCurrentAsPreset(){
+  const nameInput=document.getElementById('preset-new-name');
+  const name=nameInput.value.trim();
+  if(!name){alert('프리셋 이름을 입력하세요');return;}
+  const data={
+    rows:JSON.parse(JSON.stringify(rows)),
+    milestones:JSON.parse(JSON.stringify(milestones)),
+    pointers:JSON.parse(JSON.stringify(pointers)),
+    periodBlocks:JSON.parse(JSON.stringify(periodBlocks)),
+    legendItems:JSON.parse(JSON.stringify(legendItems)),
+    zoom:WW,rowHeight:ROW_H,barPad:BAR_PAD
+  };
+  const list=_getPresets();
+  list.push({id:'preset'+Date.now(),name,savedAt:Date.now(),refWeek:_computePresetRefWeek(),data});
+  _savePresets(list);
+  nameInput.value='';
+  renderPresetList();
+  showToast('"'+name+'" 프리셋으로 저장했습니다');
+}
+function deletePreset(id){
+  if(!confirm('이 프리셋을 삭제하시겠습니까?'))return;
+  _savePresets(_getPresets().filter(p=>p.id!==id));
+  renderPresetList();
+}
+function applyPreset(preset,newDateStr){
+  const deltaWeeks=dateToWeek(newDateStr)-preset.refWeek;
+  const shifted=_shiftPresetDates(preset.data,deltaWeeks);
+  rows=shifted.rows;milestones=shifted.milestones;pointers=shifted.pointers;
+  periodBlocks=shifted.periodBlocks;legendItems=shifted.legendItems;
+  if(shifted.zoom){WW=shifted.zoom;const sl=document.getElementById('zoom');if(sl){sl.value=WW;document.getElementById('zoom-lbl').textContent=WW+'px';}}
+  if(shifted.rowHeight){ROW_H=shifted.rowHeight;const sl=document.getElementById('row-height');if(sl){sl.value=ROW_H;document.getElementById('rh-lbl').textContent=ROW_H+'px';}}
+  if(shifted.barPad!==undefined){BAR_PAD=shifted.barPad;const sl=document.getElementById('bar-pad');if(sl){sl.value=BAR_PAD;document.getElementById('bp-lbl').textContent=BAR_PAD+'px';}}
+  renderLegend();render();
+  showToast('"'+preset.name+'" 프리셋을 '+newDateStr+' 기준으로 적용했습니다');
+}
+function openApplyPresetPrompt(id){
+  const preset=_getPresets().find(p=>p.id===id);
+  if(!preset)return;
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9100;display:flex;align-items:center;justify-content:center';
+  const box=document.createElement('div');
+  box.style.cssText='background:var(--bg);border:0.5px solid var(--bd2);border-radius:12px;padding:20px;width:320px;font-family:inherit;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
+  box.innerHTML=`
+    <div style="font-size:14px;font-weight:600;margin-bottom:10px;color:var(--tx)">"${preset.name}" 적용</div>
+    <div style="font-size:12px;color:var(--tx2);margin-bottom:10px">새 프로젝트의 시작일을 입력하면, 저장된 일정 전체가 이 날짜에 맞춰 자동으로 이동합니다.</div>
+    <input id="preset-apply-date" type="date" value="${new Date().toISOString().slice(0,10)}" style="width:100%;margin-bottom:14px">
+    <div style="display:flex;gap:6px;justify-content:flex-end">
+      <button id="preset-apply-cancel">취소</button>
+      <button id="preset-apply-confirm" class="pri">적용</button>
+    </div>`;
+  overlay.appendChild(box);document.body.appendChild(overlay);
+  const close=()=>document.body.removeChild(overlay);
+  box.querySelector('#preset-apply-cancel').onclick=close;
+  overlay.onclick=e=>{if(e.target===overlay)close();};
+  box.querySelector('#preset-apply-confirm').onclick=()=>{
+    const newDate=box.querySelector('#preset-apply-date').value;
+    if(!newDate)return;
+    if(!confirm('현재 일정표 내용을 덮어씁니다. 계속할까요?'))return;
+    applyPreset(preset,newDate);
+    close();
+    closePresetModal();
+  };
+}
+function renderPresetList(){
+  const el=document.getElementById('preset-list');
+  if(!el)return;
+  const list=_getPresets();
+  el.innerHTML='';
+  if(!list.length){el.innerHTML='<div class="ms-empty">저장된 프리셋이 없습니다</div>';return;}
+  list.slice().reverse().forEach(p=>{
+    const row=document.createElement('div');row.className='ms-row';
+    const d=new Date(p.savedAt);
+    row.innerHTML=`<span style="flex:1;font-size:12px;line-height:1.5">${p.name}<br><span style="font-size:10px;color:var(--tx3)">${d.toLocaleDateString('ko-KR')} 저장</span></span>
+      <button class="pri" onclick="openApplyPresetPrompt('${p.id}')">적용</button>
+      <button class="danger" onclick="deletePreset('${p.id}')">삭제</button>`;
+    el.appendChild(row);
+  });
+}
+function openPresetModal(){renderPresetList();document.getElementById('preset-modal-bg').classList.add('open');}
+function closePresetModal(){document.getElementById('preset-modal-bg').classList.remove('open');}
+
+// ═══════════════════════════════════════════
 // 항목 복제
 // ═══════════════════════════════════════════
 function duplicateGroup(id){
@@ -1970,20 +2370,7 @@ let periodBlocks=[
   // {id, label, startWeek, endWeek, color}
 ];
 
-// 간트 주차 ↔ 연/월/주 변환
-function wToYMW(w){
-  // 절대 주차 → {yr, mo(1-12), wk(1-4)}
-  const absMonIdx=Math.floor(((w%48)+48)%48/4)+Math.floor(w/48)*12;
-  const yr=2025+Math.floor(absMonIdx/12);
-  const mo=((absMonIdx%12)+12)%12+1;
-  const wk=(((w%4)+4)%4)+1;
-  return{yr,mo,wk};
-}
-function ymwToW(yr,mo,wk){
-  // {yr, mo, wk} → 절대 주차
-  const absMonIdx=(yr-2025)*12+(mo-1);
-  return absMonIdx*4+(wk-1);
-}
+// 간트 주차 ↔ 연/월/주 변환은 상단 유틸 섹션의 wToYMW/ymwToW(실제 달력 기준) 사용
 
 function openPeriodModal(){
   renderPeriodList();
@@ -1996,7 +2383,7 @@ function _pbSelHTML(prefix, idx, w, label){
     `<option value="${y}"${yr===y?' selected':''}>${y}년</option>`).join('');
   const moOpts=Array.from({length:12},(_,i)=>i+1).map(m=>
     `<option value="${m}"${mo===m?' selected':''}>${m}월</option>`).join('');
-  const wkOpts=[1,2,3,4].map(k=>
+  const wkOpts=[1,2,3,4,5].map(k=>
     `<option value="${k}"${wk===k?' selected':''}>${k}주</option>`).join('');
   return `<span style="font-size:10px;color:var(--tx2);white-space:nowrap">${label}</span>
     <select onchange="periodBlocks[${idx}].${prefix}Week=ymwToW(parseInt(this.closest('[data-pb]').querySelector('[data-yr-${prefix}]').value),parseInt(this.closest('[data-pb]').querySelector('[data-mo-${prefix}]').value),parseInt(this.closest('[data-pb]').querySelector('[data-wk-${prefix}]').value));render(false)"
@@ -2145,16 +2532,18 @@ function _flashLock(){
   btn.addEventListener('animationend',function h(){btn.classList.remove('flash');btn.removeEventListener('animationend',h);});
 }
 
+const _ICON_LOCK='<svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
+const _ICON_UNLOCK='<svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>';
 function _applyLockUI(){
   var btn=document.getElementById('btn-lock');
   if(_editLocked){
-    btn.textContent='🔒 잠금';
+    btn.innerHTML=_ICON_LOCK+' 잠금';
     btn.classList.add('locked');
     // undo/redo도 비활성
     document.getElementById('btn-undo').disabled=true;
     document.getElementById('btn-redo').disabled=true;
   } else {
-    btn.textContent='🔓 편집';
+    btn.innerHTML=_ICON_UNLOCK+' 편집';
     btn.classList.remove('locked');
     _updateUndoBtn();
   }
@@ -2264,6 +2653,9 @@ document.getElementById('bar-pad').addEventListener('input',e=>{
   document.getElementById('bp-lbl').textContent=BAR_PAD+'px';
   render();
 });
+document.getElementById('meta-title').addEventListener('input',scheduleAutosave);
+document.getElementById('meta-date').addEventListener('input',scheduleAutosave);
+document.getElementById('memo').addEventListener('input',scheduleAutosave);
 matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{renderLegend();render()});
 renderLegend();
 // 우선순위: 1) ?project= 파라미터로 data/{name}.json fetch → 2) 기본 데이터
@@ -2284,12 +2676,22 @@ renderLegend();
     // 파일 없음 또는 로컬 실행 → 기본 데이터(_DEFAULT_DATA)로 시작
   }
 
+  // 자동저장된 임시 편집 내용이 있으면 복구 제안 (배너 — 페이지를 막지 않음)
+  try{
+    const raw=localStorage.getItem('_autosave_'+_pName);
+    if(raw){
+      const saved=JSON.parse(raw);
+      if(saved&&saved.data)_showAutosaveBanner(saved.data,saved.ts);
+    }
+  }catch(e){}
+
   // 저장된 뷰 설정 없을 때만 화면 크기 기반 자동 최적화
   if(!_hasViewSettings) _autoFitView();
 
   _historyPaused=false;
   render();
   _updateUndoBtn();
+  updateAutosaveBadge();
 })();
 
 function _autoFitView(){
