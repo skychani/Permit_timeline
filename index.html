@@ -7,6 +7,8 @@
 <script>(function(){try{var t=localStorage.getItem('theme')||'dark';document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme='dark';}})()</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
 /* ── Design tokens — light (default) ── */
 :root{
@@ -331,6 +333,7 @@ textarea#memo:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(94,106,210
       <button class="exp-btn" onclick="exportPNG()" title="간트 차트를 PNG 이미지로 저장"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg> PNG</button>
       <button class="exp-btn" onclick="exportExcel()" title="간트 차트 모양 그대로 엑셀로 저장"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> Excel</button>
     </div>
+    <button id="btn-share" class="exp-btn" onclick="fbShare()" title="실시간 공유 링크 생성 및 복사"><svg class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg> 공유</button>
     <button id="btn-theme" onclick="toggleTheme()" title="다크/라이트 모드 전환" style="padding:5px 9px">
       <svg id="theme-icon-dark" class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
       <svg id="theme-icon-light" class="bi" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
@@ -348,6 +351,7 @@ textarea#memo:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(94,106,210
       <input type="date" id="meta-date" style="width:136px">
     </div>
     <span id="autosave-badge" style="display:none"></span>
+    <span id="sync-badge" style="display:none;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:rgba(34,197,94,0.1)"></span>
     <div class="vsep"></div>
     <div class="cfg-group">
       <label>줌</label>
@@ -2378,6 +2382,131 @@ document.addEventListener('keydown',e=>{
 function _lsSet(key,val){try{localStorage.setItem(key,val);return true;}catch(e){return false;}}
 function _lsGet(key){try{return localStorage.getItem(key);}catch(e){return null;}}
 
+// ═══════════════════════════════════════════
+// Firebase 실시간 협업
+// ─ 아래 _FB_CONFIG를 본인 프로젝트 값으로 교체하세요 ─
+// ═══════════════════════════════════════════
+const _FB_CONFIG={
+  apiKey:      'AIzaSyBl64bwSwJhaSXpkrHtFxtJMtkuJLg-KcA',
+  authDomain:  'permittimeline.firebaseapp.com',
+  databaseURL: 'https://permittimeline-default-rtdb.firebaseio.com',
+  projectId:   'permittimeline',
+  storageBucket:'permittimeline.firebasestorage.app',
+  messagingSenderId:'488562542847',
+  appId:       '1:488562542847:web:8a81ea16139465a002e4ca',
+};
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+let _fbRef=null;
+let _fbWriteTimer=null;
+let _myLastWriteTs=0;
+
+function _fbConfigured(){
+  return _FB_CONFIG.apiKey&&_FB_CONFIG.apiKey!=='YOUR_API_KEY';
+}
+
+function _fbInit(projectId,onFirstLoad){
+  if(!_fbConfigured()){if(onFirstLoad)onFirstLoad(false);return;}
+  try{
+    if(!firebase.apps.length)firebase.initializeApp(_FB_CONFIG);
+    const db=firebase.database();
+    _fbRef=db.ref('projects/'+projectId);
+    let isFirst=true;
+    _fbRef.on('value',snap=>{
+      const data=snap.val();
+      if(isFirst){
+        isFirst=false;
+        const hasView=!!(data&&(data.zoom||data.rowHeight||data.barPad!==undefined));
+        if(data){_historyPaused=true;setData(data);_historyPaused=false;}
+        if(onFirstLoad)onFirstLoad(hasView);
+        _updateSyncBadge('connected');
+        return;
+      }
+      // 내가 쓴 echo는 무시
+      if(data&&data.updatedAt&&Math.abs(data.updatedAt-_myLastWriteTs)<100)return;
+      if(data){_historyPaused=true;setData(data);_historyPaused=false;_updateSyncBadge('synced',data.updatedAt);}
+    });
+    _fbRef.on('disconnect',()=>_updateSyncBadge('disconnected'));
+  }catch(e){console.error('Firebase init error',e);if(onFirstLoad)onFirstLoad(false);}
+}
+
+function _fbScheduleWrite(){
+  if(!_fbRef)return;
+  clearTimeout(_fbWriteTimer);
+  _updateSyncBadge('pending');
+  _fbWriteTimer=setTimeout(()=>{
+    _myLastWriteTs=Date.now();
+    _fbRef.set({...getData(),updatedAt:_myLastWriteTs})
+      .then(()=>_updateSyncBadge('synced',_myLastWriteTs))
+      .catch(()=>_updateSyncBadge('error'));
+  },1500);
+}
+
+function _updateSyncBadge(status,ts){
+  const el=document.getElementById('sync-badge');
+  const btn=document.getElementById('btn-share');
+  if(!el)return;
+  const STATES={
+    connected:   ['🟢 연결됨','#22c55e','rgba(34,197,94,0.1)'],
+    synced:      ['✓ 동기화됨','#22c55e','rgba(34,197,94,0.1)'],
+    pending:     ['⏳ 저장 중…','#f59e0b','rgba(245,158,11,0.1)'],
+    error:       ['⚠ 오류','#ef4444','rgba(239,68,68,0.1)'],
+    disconnected:['○ 연결 끊김','#9ca3af','rgba(156,163,175,0.1)'],
+  };
+  const [text,color,bg]=STATES[status]||STATES.connected;
+  el.textContent=ts&&status==='synced'
+    ?'✓ '+new Date(ts).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+' 동기화'
+    :text;
+  el.style.color=color;el.style.background=bg;el.style.display='inline';
+  if(btn){
+    const on=status==='connected'||status==='synced';
+    btn.style.background=on?'rgba(34,197,94,0.12)':'';
+    btn.style.borderColor=on?'rgba(34,197,94,0.45)':'';
+    btn.style.color=on?'#16a34a':'';
+  }
+}
+
+async function fbShare(){
+  if(!_fbConfigured()){
+    alert(
+      '⚙ Firebase 설정이 필요합니다.\n\n'+
+      'HTML 파일 내 _FB_CONFIG 값을\nFirebase Console에서 발급받은 값으로 교체하세요.\n\n'+
+      '1. console.firebase.google.com\n'+
+      '2. 프로젝트 만들기 → Realtime Database 활성화\n'+
+      '3. 프로젝트 설정 → 앱 추가(웹) → SDK 설정값 복사'
+    );
+    return;
+  }
+  if(_fbRef){
+    // 이미 연결된 경우 링크만 복사
+    const url=location.origin+location.pathname+'?p='+_fbRef.key;
+    await navigator.clipboard.writeText(url);
+    showToast('공유 링크가 클립보드에 복사되었습니다');
+    return;
+  }
+  // 새 Firebase 프로젝트 생성 후 현재 데이터 업로드
+  try{
+    if(!firebase.apps.length)firebase.initializeApp(_FB_CONFIG);
+    const db=firebase.database();
+    const newRef=db.ref('projects').push();
+    _myLastWriteTs=Date.now();
+    await newRef.set({...getData(),updatedAt:_myLastWriteTs});
+    window.history.pushState({},'','?p='+newRef.key);
+    _fbRef=newRef;
+    // 이후 원격 변경 리스너
+    _fbRef.on('value',snap=>{
+      const data=snap.val();
+      if(!data||Math.abs(data.updatedAt-_myLastWriteTs)<100)return;
+      _historyPaused=true;setData(data);_historyPaused=false;
+      _updateSyncBadge('synced',data.updatedAt);
+    });
+    _updateSyncBadge('connected');
+    const url=location.origin+location.pathname+'?p='+newRef.key;
+    await navigator.clipboard.writeText(url);
+    showToast('공유 링크가 복사되었습니다 — 상대방에게 링크를 전달하세요');
+  }catch(e){console.error(e);showToast('오류: '+e.message);}
+}
+
 // ── 테마 토글 ──────────────────────────────────────────────
 function toggleTheme(){
   const isDark=document.documentElement.dataset.theme==='dark';
@@ -2405,6 +2534,7 @@ function _projName(){return(new URLSearchParams(window.location.search)).get('pr
 function scheduleAutosave(){
   clearTimeout(_autosaveTimer);
   _autosaveTimer=setTimeout(doAutosave,1200);
+  _fbScheduleWrite();
 }
 function doAutosave(){
   try{
@@ -2880,36 +3010,38 @@ document.getElementById('meta-date').addEventListener('input',scheduleAutosave);
 document.getElementById('memo').addEventListener('input',scheduleAutosave);
 _updateThemeBtn();
 renderLegend();
-// 우선순위: 1) ?project= 파라미터로 data/{name}.json fetch → 2) 기본 데이터
+// 우선순위: 1) ?p= Firebase → 2) ?project= 파일 fetch → 3) 기본 데이터
 (async function _init(){
   _historyPaused=true;
-
-  const _pName=(new URLSearchParams(window.location.search)).get('project')||'project';
+  const _params=new URLSearchParams(window.location.search);
+  const _fbId=_params.get('p');
   var _hasViewSettings=false;
-  try{
-    const res=await fetch('./data/'+encodeURIComponent(_pName)+'.json',{cache:'no-cache'});
-    if(res.ok){
-      const d=await res.json();
-      // JSON에 뷰 설정이 명시적으로 저장된 경우 autoFit 건너뜀
-      _hasViewSettings=!!(d.zoom||d.rowHeight||d.barPad!==undefined);
-      setData(d);
-    }
-  }catch(e){
-    // 파일 없음 또는 로컬 실행 → 기본 데이터(_DEFAULT_DATA)로 시작
+
+  if(_fbId){
+    // ── Firebase 실시간 모드 ──────────────────
+    await new Promise(resolve=>_fbInit(_fbId,hasView=>{
+      _hasViewSettings=hasView;
+      resolve();
+    }));
+  }else{
+    // ── 파일 모드 (기존 로직) ─────────────────
+    const _pName=_params.get('project')||'project';
+    try{
+      const res=await fetch('./data/'+encodeURIComponent(_pName)+'.json',{cache:'no-cache'});
+      if(res.ok){
+        const d=await res.json();
+        _hasViewSettings=!!(d.zoom||d.rowHeight||d.barPad!==undefined);
+        setData(d);
+      }
+    }catch(e){}
+    // 자동저장된 임시 편집 내용이 있으면 복구 제안
+    try{
+      const raw=localStorage.getItem('_autosave_'+_pName);
+      if(raw){const saved=JSON.parse(raw);if(saved&&saved.data)_showAutosaveBanner(saved.data,saved.ts);}
+    }catch(e){}
   }
 
-  // 자동저장된 임시 편집 내용이 있으면 복구 제안 (배너 — 페이지를 막지 않음)
-  try{
-    const raw=localStorage.getItem('_autosave_'+_pName);
-    if(raw){
-      const saved=JSON.parse(raw);
-      if(saved&&saved.data)_showAutosaveBanner(saved.data,saved.ts);
-    }
-  }catch(e){}
-
-  // 저장된 뷰 설정 없을 때만 화면 크기 기반 자동 최적화
-  if(!_hasViewSettings) _autoFitView();
-
+  if(!_hasViewSettings)_autoFitView();
   _historyPaused=false;
   render();
   _updateUndoBtn();
