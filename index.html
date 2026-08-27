@@ -2013,12 +2013,12 @@ function setData(d){
     const sl=document.getElementById('bar-pad');
     if(sl){sl.value=BAR_PAD;document.getElementById('bp-lbl').textContent=BAR_PAD+'px';}
   }
-  if(d.legendItems)legendItems=JSON.parse(JSON.stringify(d.legendItems));
-  if(d.milestones)milestones=JSON.parse(JSON.stringify(d.milestones));
-  if(d.rows)rows=JSON.parse(JSON.stringify(d.rows));
+  if(d.legendItems!=null)legendItems=JSON.parse(JSON.stringify(d.legendItems));
+  if(d.milestones!=null)milestones=JSON.parse(JSON.stringify(d.milestones));
+  if(d.rows!=null)rows=JSON.parse(JSON.stringify(d.rows));
   else if(d.groups)rows=JSON.parse(JSON.stringify(d.groups));
-  if(d.pointers)pointers=JSON.parse(JSON.stringify(d.pointers));
-  if(d.periodBlocks)periodBlocks=JSON.parse(JSON.stringify(d.periodBlocks));
+  if(d.pointers!=null)pointers=JSON.parse(JSON.stringify(d.pointers));
+  if(d.periodBlocks!=null)periodBlocks=JSON.parse(JSON.stringify(d.periodBlocks));
   renderLegend();render();
 }
 function resetToDefault(){
@@ -2417,17 +2417,41 @@ function _fbInit(projectId,onFirstLoad){
       if(isFirst){
         isFirst=false;
         const hasView=!!(data&&(data.zoom||data.rowHeight||data.barPad!==undefined));
-        if(data){_historyPaused=true;setData(data);_historyPaused=false;}
+        if(data){_historyPaused=true;setData(_fbNormalize(data));_historyPaused=false;}
         if(onFirstLoad)onFirstLoad(hasView);
         _updateSyncBadge('connected');
         return;
       }
       // 내가 쓴 echo는 무시
       if(data&&data.updatedAt&&Math.abs(data.updatedAt-_myLastWriteTs)<100)return;
-      if(data){_historyPaused=true;setData(data);_historyPaused=false;_updateSyncBadge('synced',data.updatedAt);}
+      if(data){_historyPaused=true;setData(_fbNormalize(data));_historyPaused=false;_updateSyncBadge('synced',data.updatedAt);}
     });
     _fbRef.on('disconnect',()=>_updateSyncBadge('disconnected'));
   }catch(e){console.error('Firebase init error',e);if(onFirstLoad)onFirstLoad(false);}
+}
+
+// Firebase는 배열을 {0:…,1:…} 객체로 저장 → 수신 시 다시 배열로 복원
+function _fbNormalize(data){
+  if(!data)return data;
+  const toArr=v=>{
+    if(v===null||v===undefined)return [];
+    if(Array.isArray(v))return v;
+    return Object.keys(v).sort((a,b)=>Number(a)-Number(b)).map(k=>v[k]).filter(x=>x!=null);
+  };
+  const d={...data};
+  if('rows' in d){
+    d.rows=toArr(d.rows).map(r=>{
+      if(!r)return r;
+      const row={...r};
+      if('phases' in row)row.phases=toArr(row.phases);
+      return row;
+    });
+  }
+  if('milestones' in d)d.milestones=toArr(d.milestones);
+  if('legendItems' in d)d.legendItems=toArr(d.legendItems);
+  if('pointers' in d)d.pointers=toArr(d.pointers);
+  if('periodBlocks' in d)d.periodBlocks=toArr(d.periodBlocks);
+  return d;
 }
 
 function _fbScheduleWrite(){
@@ -2497,7 +2521,7 @@ async function fbShare(){
     _fbRef.on('value',snap=>{
       const data=snap.val();
       if(!data||Math.abs(data.updatedAt-_myLastWriteTs)<100)return;
-      _historyPaused=true;setData(data);_historyPaused=false;
+      _historyPaused=true;setData(_fbNormalize(data));_historyPaused=false;
       _updateSyncBadge('synced',data.updatedAt);
     });
     _updateSyncBadge('connected');
