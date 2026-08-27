@@ -1,0 +1,553 @@
+{
+  "title": "마포구 성산동 165-72번지 일대 가로주택정비사업",
+  "date": "2026-08-27",
+  "memo": "※ 위 일정은 인허가 과정 및 조합의 일정에 따라 변경될 수 있습니다.",
+  "zoom": 28,
+  "rowHeight": 48,
+  "barPad": 14,
+  "legendItems": [],
+  "milestones": [
+    {
+      "color": "#DD2222",
+      "date": "2027-01-03",
+      "id": "ms1",
+      "name": "사업시행인가 접수"
+    },
+    {
+      "color": "#CC6600",
+      "date": "2027-04-25",
+      "id": "ms2",
+      "name": "사업시행인가 완료"
+    },
+    {
+      "color": "#226622",
+      "date": "2027-07-18",
+      "id": "ms3",
+      "name": "착공"
+    },
+    {
+      "color": "#f61313",
+      "date": "2026-06-07",
+      "id": "ms1778803114126",
+      "name": "면적확정"
+    },
+    {
+      "color": "#dd2222",
+      "date": "2026-10-25",
+      "id": "ms1782269616727",
+      "name": "통합심의변경 심의완료"
+    },
+    {
+      "color": "#DD2222",
+      "date": "2026-09-05",
+      "id": "ms1787787449214",
+      "name": "총회"
+    }
+  ],
+  "rows": [
+    {
+      "abs": 66,
+      "anchor": "free",
+      "dep": "",
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "id": "g15",
+      "msref": "ms1",
+      "name": "성산동 조합",
+      "offset": 0,
+      "phases": [
+        {
+          "color": "green",
+          "dur": 3,
+          "name": "조합원 분양",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "green",
+          "dur": 5,
+          "name": "시공사 공사비 협의",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "green",
+          "dur": 46,
+          "name": "조합일정",
+          "pattern": "dots",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "green",
+          "dur": 12,
+          "name": "이주 / 철거",
+          "pattern": "dots",
+          "textColor": "#ffffff"
+        }
+      ],
+      "type": "group"
+    },
+    {
+      "abs": 66,
+      "anchor": "free",
+      "dep": "",
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "id": "g1779233542079",
+      "msref": "ms1",
+      "name": "도시",
+      "offset": 0,
+      "phases": [
+        {
+          "color": "purple",
+          "dur": 2,
+          "name": "보고서작성",
+          "pattern": "dots",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "purple",
+          "dur": 26,
+          "name": "사업보정계수 적용 통합심의",
+          "textColor": "#ffffff"
+        }
+      ],
+      "type": "group"
+    },
+    {
+      "abs": 66,
+      "anchor": "free",
+      "dep": "",
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "id": "g14",
+      "msref": "ms1",
+      "name": "건축",
+      "offset": 0,
+      "phases": [
+        {
+          "color": "orange",
+          "dur": 38,
+          "name": "사업시행인가 도서 작성",
+          "pattern": "vline",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "orange",
+          "dur": 8,
+          "name": "사전협의/보완",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "orange",
+          "dur": 8,
+          "name": "유관부서/보완",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "orange",
+          "dur": 12,
+          "name": "착공도서 작성",
+          "pattern": "vline",
+          "textColor": "#ffffff"
+        }
+      ],
+      "type": "group"
+    },
+    {
+      "color": "#557799",
+      "id": "s2",
+      "label": "",
+      "type": "sep"
+    },
+    {
+      "abs": 84,
+      "anchor": "free",
+      "dep": "",
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "id": "g7",
+      "msref": "ms1",
+      "name": "굴토심의",
+      "offset": -17,
+      "phases": [
+        {
+          "color": "yellow",
+          "dur": 4,
+          "msoffset": -4,
+          "msref": "ms1",
+          "name": "흙막이 도서 작성",
+          "pattern": "dots",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "gray",
+          "dur": 12,
+          "name": "지하안전영향평가 완료대기",
+          "pattern": "vline",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "yellow",
+          "dur": 4,
+          "name": "도서작성 및 협의기간",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "yellow",
+          "dur": 6,
+          "name": "사전검토 및 의견제출",
+          "pattern": "vline",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "yellow",
+          "dur": 4,
+          "name": "의견반영 및 조치계획서 제출",
+          "textColor": "#ffffff"
+        }
+      ],
+      "type": "group"
+    },
+    {
+      "abs": 84,
+      "anchor": "free",
+      "dep": "",
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "id": "g8",
+      "msref": "ms1",
+      "name": "지하안전영향평가",
+      "offset": -15,
+      "phases": [
+        {
+          "color": "yellow",
+          "dur": 4,
+          "msoffset": -4,
+          "msref": "ms1",
+          "name": "보고서 작성",
+          "pattern": "dots",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "yellow",
+          "dur": 12,
+          "name": "검토/보완/행정처리",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "gray",
+          "dur": 8,
+          "name": "굴토심의 대기",
+          "pattern": "vline",
+          "textColor": "#ffffff"
+        }
+      ],
+      "type": "group"
+    },
+    {
+      "abs": 99,
+      "anchor": "free",
+      "dep": "g9",
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "id": "g10",
+      "msref": "ms1",
+      "name": "구조심의",
+      "offset": 0,
+      "phases": [
+        {
+          "color": "teal",
+          "dur": 4,
+          "name": "데이터 작성",
+          "pattern": "dots",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "gray",
+          "dur": 7,
+          "msoffset": -1,
+          "msref": "ms1",
+          "name": "풍동실험 대기",
+          "pattern": "vline",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "teal",
+          "dur": 4,
+          "name": "풍동실험 반영",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "teal",
+          "dur": 4,
+          "name": "성능설계",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "teal",
+          "dur": 4,
+          "name": "도서작성",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "teal",
+          "dur": 6,
+          "name": "구조심의 및 보완",
+          "pattern": "vline",
+          "textColor": "#ffffff"
+        }
+      ],
+      "type": "group"
+    },
+    {
+      "abs": 99,
+      "anchor": "free",
+      "dep": "",
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "id": "g9",
+      "msref": "ms1",
+      "name": "풍동실험",
+      "offset": -4,
+      "phases": [
+        {
+          "color": "blue",
+          "dur": 4,
+          "name": "실험모형제작",
+          "pattern": "dots",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "blue",
+          "dur": 4,
+          "msoffset": -1,
+          "msref": "ms1",
+          "name": "풍동실험",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "blue",
+          "dur": 3,
+          "name": "풍압실험/보고서",
+          "textColor": "#ffffff"
+        }
+      ],
+      "type": "group"
+    },
+    {
+      "abs": 86,
+      "anchor": "free",
+      "dep": "",
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "id": "g11",
+      "msref": "ms1",
+      "name": "소규모 재해안전",
+      "offset": -2,
+      "phases": [
+        {
+          "color": "green",
+          "dur": 4,
+          "name": "재해영향평가",
+          "pattern": "dots",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "green",
+          "dur": 4,
+          "msref": "",
+          "name": "협의 및 보완",
+          "textColor": "#ffffff"
+        }
+      ],
+      "type": "group"
+    },
+    {
+      "abs": 100,
+      "anchor": "free",
+      "dep": "",
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "id": "g12",
+      "msref": "ms1",
+      "name": "친환경(녹색건축)",
+      "offset": -20,
+      "phases": [
+        {
+          "color": "pink",
+          "dur": 4,
+          "name": "도서작성",
+          "pattern": "dots",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "pink",
+          "dur": 4,
+          "msref": "ms1",
+          "name": "협의공문수신",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "gray",
+          "dur": 5,
+          "name": "기관협의",
+          "pattern": "vline",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "pink",
+          "dur": 5,
+          "name": "보완",
+          "pattern": "vline",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "pink",
+          "dur": 5,
+          "name": "도서작성 및 협의/결로방지 성능평가",
+          "textColor": "#ffffff"
+        },
+        {
+          "color": "gray",
+          "dur": 4,
+          "name": "기관협의",
+          "pattern": "vline",
+          "textColor": "#ffffff"
+        }
+      ],
+      "type": "group"
+    },
+    {
+      "abs": 116,
+      "anchor": "free",
+      "dep": "",
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "id": "g13",
+      "msref": "ms1",
+      "name": "해체심의",
+      "offset": -40,
+      "phases": [
+        {
+          "color": "orange",
+          "dur": 12,
+          "msoffset": 0,
+          "msref": "",
+          "name": "해체심의",
+          "pattern": "diag",
+          "textColor": "#ffffff"
+        }
+      ],
+      "type": "group"
+    },
+    {
+      "color": "#774422",
+      "id": "s3",
+      "label": "",
+      "type": "sep"
+    },
+    {
+      "abs": 66,
+      "anchor": "free",
+      "dep": "",
+      "emph": "none",
+      "emphColor": "#ff8c00",
+      "id": "g1779234606979",
+      "msref": "ms1",
+      "name": "협력사(구조, 토목, 조경, 기계, 전기, 소방)",
+      "offset": 0,
+      "phases": [
+        {
+          "color": "gray",
+          "dur": 38,
+          "name": "사업시행인가 도서",
+          "pattern": "diagR",
+          "textColor": "#ffffff"
+        }
+      ],
+      "type": "group"
+    }
+  ],
+  "pointers": [
+    {
+      "absWeek": 116,
+      "color": "#dd4444",
+      "gid": "g8",
+      "id": "pt1778804223293",
+      "label": "지하안전영향평가 완료",
+      "pos": "above"
+    },
+    {
+      "absWeek": 120,
+      "color": "#dd4444",
+      "gid": "g7",
+      "id": "pt1778804421154",
+      "label": "도서제출",
+      "pos": "below"
+    },
+    {
+      "absWeek": 126,
+      "color": "#dd4444",
+      "gid": "g7",
+      "id": "pt1778804649660",
+      "label": "굴토심의",
+      "pos": "below"
+    },
+    {
+      "absWeek": 130,
+      "color": "#dd4444",
+      "gid": "g7",
+      "id": "pt1778804681920",
+      "label": "굴토심의 완료",
+      "pos": "below"
+    },
+    {
+      "absWeek": 120,
+      "color": "#dd4444",
+      "gid": "g10",
+      "id": "pt1778804921707",
+      "label": "구조심의 접수",
+      "pos": "above"
+    },
+    {
+      "absWeek": 90,
+      "color": "#dd4444",
+      "gid": "g11",
+      "id": "pt1778804988525",
+      "label": "보고서 제출",
+      "pos": "below"
+    },
+    {
+      "absWeek": 94,
+      "color": "#dd4444",
+      "gid": "g11",
+      "id": "pt1778805012033",
+      "label": "완료",
+      "pos": "below"
+    },
+    {
+      "absWeek": 128,
+      "color": "#dd4444",
+      "gid": "g10",
+      "id": "pt1778805497369",
+      "label": "완료",
+      "pos": "below"
+    },
+    {
+      "absWeek": 107,
+      "color": "#dd4444",
+      "gid": "g9",
+      "id": "pt1779233885661",
+      "label": "완료",
+      "pos": "below"
+    },
+    {
+      "absWeek": 88,
+      "color": "#dd4444",
+      "gid": "g1779233542079",
+      "id": "pt1787787522537",
+      "label": "통합심의변경접수",
+      "pos": "above"
+    }
+  ],
+  "periodBlocks": []
+}
