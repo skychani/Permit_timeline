@@ -39,9 +39,9 @@
     },
     {
       "id": "ms1787787449214",
-      "name": "총회",
+      "name": "총회09/05",
       "date": "2026-09-05",
-      "color": "#DD2222"
+      "color": "#dd2222"
     }
   ],
   "rows": [
@@ -120,13 +120,13 @@
       "offset": 0,
       "dep": "",
       "msref": "ms1",
-      "abs": 66,
+      "abs": 74,
       "emph": "none",
       "emphColor": "#ff8c00",
       "phases": [
         {
           "name": "사업시행인가 도서 작성",
-          "dur": 38,
+          "dur": 30,
           "color": "orange",
           "pattern": "vline",
           "textColor": "#ffffff"
@@ -542,8 +542,8 @@
     },
     {
       "id": "pt1787787522537",
-      "label": "통합심의변경접수",
-      "absWeek": 88,
+      "label": "통합심의변경접수09/08",
+      "absWeek": 87,
       "gid": "g1779233542079",
       "pos": "above",
       "color": "#dd4444"
